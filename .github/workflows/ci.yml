@@ -78,12 +78,12 @@ jobs:
 
       - name: Eval baseline
         run: |
-          poetry -C relay run python scripts/eval_replay.py --host http://localhost:8000 --gold eval/gold.jsonl --out eval/baseline.json --policy-label baseline
+          poetry -C relay run python ../scripts/eval_replay.py --host http://localhost:8000 --gold ../eval/gold.jsonl --out eval/baseline.json --policy-label baseline
 
       - name: Eval candidate (vs baseline)
         run: |
-          poetry -C relay run python scripts/eval_replay.py --host http://localhost:8000 --gold eval/gold.jsonl --out eval/candidate.json --policy-label candidate --baseline-out eval/baseline.json
+          poetry -C relay run python ../scripts/eval_replay.py --host http://localhost:8000 --gold ../eval/gold.jsonl --out eval/candidate.json --policy-label candidate --baseline-out eval/baseline.json
 
       - name: Gate
         run: |
-          poetry -C relay run python scripts/eval_gate.py --baseline eval/baseline.json --candidate eval/candidate.json
+          poetry -C relay run python ../scripts/eval_gate.py --baseline eval/baseline.json --candidate eval/candidate.json
