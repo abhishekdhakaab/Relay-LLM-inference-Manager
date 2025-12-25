@@ -1,0 +1,65 @@
+{
+  "label": "candidate",
+  "n": 5,
+  "latency_ms": {
+    "p50": 6493.221625016304,
+    "p95": 8533.593666413799,
+    "p99": 8550.510299699381,
+    "median": 6493.221625016304
+  },
+  "tokens_proxy": {
+    "avg": 203.0,
+    "p95": 298.0
+  },
+  "quality_similarity_vs_baseline": {
+    "avg": 0.9478813433940397,
+    "p10": 0.9273190636698332
+  },
+  "items": [
+    {
+      "id": "g1",
+      "status": 200,
+      "latency_ms": 4292.066958005307,
+      "tokens_proxy": 105,
+      "text": "An API gateway is a software layer that sits between applications and microservices, acting as a single entry point for all external requests, allowing for centralized management, security, and rate limiting. It acts as a proxy, forwarding requests to the underlying services, providing access to APIs in a scalable and secure manner.",
+      "quality_similarity_vs_baseline": 0.9707168778473048,
+      "error": null
+    },
+    {
+      "id": "g2",
+      "status": 200,
+      "latency_ms": 1850.9272919909563,
+      "tokens_proxy": 76,
+      "text": "Tail latency refers to the delay or slowness that occurs when a system's last processed packet is delayed from being sent out, resulting in a backlog of packets waiting to be transmitted.",
+      "quality_similarity_vs_baseline": 0.9429368665676406,
+      "error": null
+    },
+    {
+      "id": "g3",
+      "status": 200,
+      "latency_ms": 6493.221625016304,
+      "tokens_proxy": 238,
+      "text": "Semantic caching is a technique used to improve the efficiency and effectiveness of data retrieval by associating each piece of data with its most relevant context or meaning. This allows search engines, indexing systems, and other applications to quickly identify and retrieve the correct information based on the specific query or criteria.\n\nOne potential risk associated with semantic caching is that it can lead to a phenomenon known as \"data duplication\" or \"information redundancy.\" When a piece of data is associated with multiple contexts or meanings, it may be indexed multiple times by search engines, indexing systems, and other applications. This can result in wasted storage capacity and unnecessary computations.\n\nFor example, if an article about a company's products is also mentioned on its website as being available for purchase online, both articles could potentially be cached at the same index or database, leading to data duplication and reduced efficiency. This risk can be mitigated by implementing techniques such as filtering out duplicate data or using more robust indexing strategies that prioritize uniqueness over semantic meaning.",
+      "quality_similarity_vs_baseline": 0.9280877005885896,
+      "error": null
+    },
+    {
+      "id": "g4",
+      "status": 200,
+      "latency_ms": 8554.739458020777,
+      "tokens_proxy": 298,
+      "text": "Rate limiting is a fundamental concept in many systems, including network protocols and web applications. Here's a short explanation for beginners:\n\n**What is rate limiting?**\n\nRate limiting is a mechanism that restricts the number of requests or actions a user can make to a system within a certain time frame (e.g., per minute, per hour). This helps prevent abuse, denial-of-service (DoS) attacks, and other types of malicious activity.\n\n**How does it work?**\n\nWhen you want to implement rate limiting in a system, you typically define a set of rules that specify:\n\n1. The type of request or action (e.g., GET, POST, PUT, DELETE)\n2. The allowed duration of the request (e.g., 10 requests per minute)\n3. Any additional conditions or constraints (e.g., IP address restrictions)\n\nWhen a user makes a request to the system within the allowed time frame, your system checks if it's one of the allowed requests. If it is, you can process the request without any issues. However, if the request exceeds the allowed duration, your system will either:\n\n1. **Block** the request: prevent further requests from being made for that specific IP address within the same time frame.\n2. **Log** the",
+      "quality_similarity_vs_baseline": 0.9268066390573289,
+      "error": null
+    },
+    {
+      "id": "g5",
+      "status": 200,
+      "latency_ms": 8449.010499985889,
+      "tokens_proxy": 298,
+      "text": "Here are three tradeoffs of caching LLM (Large Language Model) outputs:\n\n1. **Performance**: Caching LLM outputs can significantly improve the performance of applications that rely on these models for frequent requests, such as search engines, chatbots, or content generation tools. By storing pre-computed outputs in a cache, you can reduce the number of computations required to process each request, resulting in faster response times and reduced latency.\n\nHowever, caching LLM outputs also introduces some performance overhead due to the additional storage and retrieval costs associated with storing these models.\n\n2. **Data Quality**: Caching LLM outputs can lead to decreased data quality if not implemented properly. When you cache model outputs, you're essentially storing them in a temporary location that may not be representative of the original training data or context. This can result in lower-quality responses over time, as the cached models may not fully capture the nuances and complexities of the input data.\n\nTo mitigate this risk, it's essential to implement caching strategies that prioritize data freshness and adaptability, such as using cache tags or metadata to track when outputs were generated and how long they'll remain relevant.\n\n3. **Scalability**: Caching LLM outputs can also introduce scalability challenges if not designed carefully. When you scale out",
+      "quality_similarity_vs_baseline": 0.9708586329093346,
+      "error": null
+    }
+  ]
+}

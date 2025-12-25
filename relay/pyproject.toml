@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "relay"
+version = "0.1.0"
+description = "Local-first LLM Relay Platform (M1)"
+authors = ["you <you@example.com>"]
+readme = "../README.md"
+packages = [{ include = "app" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.30.0"}
+pydantic = "^2.8.0"
+pydantic-settings = "^2.4.0"
+pyyaml = "^6.0.2"
+structlog = "^24.2.0"
+asyncpg = "^0.29.0"
+sqlalchemy = "^2.0.32"
+redis = "^5.0.8"
+orjson = "^3.10.7"
+greenlet = "^3.3.0"
+httpx = "^0.28.1"
+fastembed = { version = "^0.3.6", python = ">=3.8,<3.13" }
+
+
+[tool.poetry.group.dev.dependencies]
+locust = "^2.31.0"
+pytest = "^8.3.2"
+pytest-asyncio = "^0.23.8"
+ruff = "^0.6.3"
+mypy = "^1.11.2"
+types-pyyaml = "^6.0.12.20240808"
+
+
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+strict = true
+plugins = []
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

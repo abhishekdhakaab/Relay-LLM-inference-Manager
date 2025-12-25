@@ -1,0 +1,5 @@
+{"id":"g1","tenant_id":"default","messages":[{"role":"user","content":"Explain what an API gateway does in 2 lines."}]}
+{"id":"g2","tenant_id":"default","messages":[{"role":"user","content":"Define tail latency in one sentence."}]}
+{"id":"g3","tenant_id":"default","messages":[{"role":"user","content":"What is semantic caching? Give one risk."}]}
+{"id":"g4","tenant_id":"default","messages":[{"role":"user","content":"Write a short explanation of rate limiting for a beginner."}]}
+{"id":"g5","tenant_id":"default","messages":[{"role":"user","content":"Give 3 tradeoffs of caching LLM outputs."}]}

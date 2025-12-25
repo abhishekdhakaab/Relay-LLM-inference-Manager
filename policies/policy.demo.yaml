@@ -1,0 +1,52 @@
+policy_version: "demo-1"
+
+tenants:
+  default:
+    latency_slo_ms: 8000
+    caching:
+      exact_enabled: true
+      semantic:
+        enabled: true
+        threshold: 0.88
+        ttl_seconds: 3600
+        verifier: "off"
+
+routing:
+  length_buckets:
+    short: { max_chars: 900 }
+    medium: { max_chars: 2500 }
+    long: { max_chars: 1000000 }
+
+plans:
+  short:
+    tier: "standard"
+    decoding_profile: "fast"
+    max_tokens: 200
+    temperature: 0.7
+  medium:
+    tier: "standard"
+    decoding_profile: "standard"
+    max_tokens: 450
+    temperature: 0.7
+  long:
+    tier: "standard"
+    decoding_profile: "accurate"
+    max_tokens: 650
+    temperature: 0.7
+
+scheduler:
+  short_max_prompt_chars: 1200
+  workers: 2
+  max_queue_depth_per_lane: 200
+  admission:
+    enabled: true
+    default_compute_ms:
+      short: 1200
+      long: 3500
+    degrade:
+      enabled: true
+      max_tokens_floor: 128
+      max_tokens_scale: 0.5
+    reject:
+      enabled: true
+      retry_after_seconds: 2

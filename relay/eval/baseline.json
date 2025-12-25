@@ -1,0 +1,65 @@
+{
+  "label": "baseline",
+  "n": 5,
+  "latency_ms": {
+    "p50": 5102.592665993143,
+    "p95": 10421.128775394754,
+    "p99": 10739.0072886704,
+    "median": 5102.592665993143
+  },
+  "tokens_proxy": {
+    "avg": 185.8,
+    "p95": 298.0
+  },
+  "quality_similarity_vs_baseline": {
+    "avg": null,
+    "p10": null
+  },
+  "items": [
+    {
+      "id": "g1",
+      "status": 200,
+      "latency_ms": 5102.592665993143,
+      "tokens_proxy": 94,
+      "text": "An API Gateway is a software layer that acts as an entry point for external APIs, managing authentication, rate limiting, and routing requests to specific backend services. It facilitates secure and scalable access to multiple microservices, while also providing analytics and monitoring capabilities.",
+      "quality_similarity_vs_baseline": null,
+      "error": null
+    },
+    {
+      "id": "g2",
+      "status": 200,
+      "latency_ms": 1843.8905420189258,
+      "tokens_proxy": 85,
+      "text": "Tail latency refers to the time it takes for a large amount of data, such as network packets or logs, to process and be reported by a system, often resulting from slow processing times, high memory requirements, or inefficient algorithms.",
+      "quality_similarity_vs_baseline": null,
+      "error": null
+    },
+    {
+      "id": "g3",
+      "status": 200,
+      "latency_ms": 4820.478958019521,
+      "tokens_proxy": 154,
+      "text": "Semantic caching is a technique used in web applications to improve the performance and reduce the load on web servers by storing frequently accessed data, such as HTML pages or JavaScript files, in a cache located closer to the user's browser. This approach allows for faster page loads and reduced latency.\n\nA risk of semantic caching is that it can lead to duplicate content being cached. If two different users access a webpage simultaneously, their browsers may cache the same HTML file multiple times, which can result in slower page loads for other users who are accessing the same webpage at the same time.",
+      "quality_similarity_vs_baseline": null,
+      "error": null
+    },
+    {
+      "id": "g4",
+      "status": 200,
+      "latency_ms": 10818.476916989312,
+      "tokens_proxy": 298,
+      "text": "Rate limiting is a fundamental concept in computer networking and security. I'd be happy to explain it in simple terms.\n\n**What is Rate Limiting?**\n\nRate limiting, also known as rate control or rate restriction, is a mechanism that limits the number of requests or connections a device can make to a network per unit of time. It's like a traffic cop on the internet, controlling how many cars (requests) can pass through the intersection (the network) at any given moment.\n\n**Why do we need Rate Limiting?**\n\nImagine you're trying to order food from a restaurant online. You want to be able to place multiple orders quickly, but you also don't want to get stuck in line for hours waiting for your food to arrive. That's similar to what rate limiting does \u2013 it ensures that devices can make requests within a reasonable time frame without overloading the network.\n\n**Types of Rate Limiting:**\n\nThere are two main types:\n\n1. **Connection-based rate limiting**: Limits the number of connections (e.g., HTTP requests) per user or IP address.\n2. **Request-based rate limiting**: Limits the number of requests (e.g., API calls) within a certain time frame.\n\n**How does Rate Limiting work?**\n\nRate limiting can be",
+      "quality_similarity_vs_baseline": null,
+      "error": null
+    },
+    {
+      "id": "g5",
+      "status": 200,
+      "latency_ms": 8831.736209016526,
+      "tokens_proxy": 298,
+      "text": "Here are three potential tradeoffs of caching LLM (Large Language Model) outputs:\n\n1. **Increased Loading Time**: Caching LLM outputs means that subsequent queries can access pre-computed results directly, reducing the need to re-run the model from scratch. This can result in faster initial query times and improved overall system performance.\n\nHowever, if the cached data is stale or contains errors, it may lead to slower query times due to repeated computation and invalidation of cached data.\n\n2. **Reduced Data Transfer Overhead**: By caching LLM outputs, you can reduce the amount of data that needs to be transferred from the model to the user's device. This can be particularly beneficial for large datasets or users who are far away from the model servers.\n\nFor example, if a user requests an LLM output for a specific query and the cached result is already available on their local device, they don't need to transfer the entire dataset again. Instead, they can access the pre-computed result directly from their device.\n\n3. **Improved Model Stability and Redundancy**: Caching LLM outputs can help improve model stability by reducing the load on the system and preventing overloading of the model during periods of high traffic or sudden changes in user behavior.\n\nAdditionally, caching allows",
+      "quality_similarity_vs_baseline": null,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  test-and-eval:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: relay
+          POSTGRES_PASSWORD: relay
+          POSTGRES_DB: relay
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U relay -d relay"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      DATABASE_URL: postgresql+asyncpg://relay:relay@localhost:5432/relay
+      REDIS_URL: redis://localhost:6379/0
+      POLICY_PATH: policies/policy.dev.yaml
+      RELAY_HOST: 0.0.0.0
+      RELAY_PORT: 8000
+
+      # For CI we still want the relay to run, but you may not have Ollama on GH runners.
+      # We'll add a "mock backend" mode below in code next (recommended).
+      BACKEND_MODE: mock
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install deps
+        run: |
+          cd relay
+          poetry install
+
+      - name: Init DB schema
+        run: |
+          psql "postgresql://relay:relay@localhost:5432/relay" -f infra/postgres-init/001_init.sql
+
+      - name: Run unit tests
+        run: |
+          cd relay
+          poetry run pytest -q
+
+      - name: Start relay (background)
+        run: |
+          cd relay
+          poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          sleep 2
+          curl -s http://localhost:8000/health
+
+      - name: Eval baseline
+        run: |
+          poetry -C relay run python scripts/eval_replay.py --host http://localhost:8000 --gold eval/gold.jsonl --out eval/baseline.json --policy-label baseline
+
+      - name: Eval candidate (vs baseline)
+        run: |
+          poetry -C relay run python scripts/eval_replay.py --host http://localhost:8000 --gold eval/gold.jsonl --out eval/candidate.json --policy-label candidate --baseline-out eval/baseline.json
+
+      - name: Gate
+        run: |
+          poetry -C relay run python scripts/eval_gate.py --baseline eval/baseline.json --candidate eval/candidate.json

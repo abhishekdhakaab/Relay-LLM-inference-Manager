@@ -1,0 +1,54 @@
+policy_version: "dev-0"
+
+tenants: #telling who is using this system : team/app/individual user 
+  default:
+    latency_slo_ms: 8000
+    caching:
+      exact_enabled: false # same request same output
+      semantic:
+        enabled: true
+        threshold: 0.001
+        ttl_seconds: 1800
+        verifier: "off"   # off | cheap (we’ll implement behavior later)
+
+routing: # will use this to classify question based on how big they are , based on number of charater in prompt
+  length_buckets:
+    short: { max_chars: 800 }
+    medium: { max_chars: 2400 }
+    long: { max_chars: 1000000 }
+
+plans: ## this tells that once we know the bucket here is how to exactly run for that bucket
+  short:
+    tier: "standard"
+    decoding_profile: "fast"
+    max_tokens: 256
+    temperature: 0.7
+  medium:
+    tier: "standard"
+    decoding_profile: "standard"
+    max_tokens: 512 # so a medium level job can only output maximum of 512 tokens
+    temperature: 0.7
+  long:
+    tier: "standard"
+    decoding_profile: "accurate"
+    max_tokens: 768
+    temperature: 0.7
+
+scheduler:
+  short_max_prompt_chars: 1200 # if prompt length is shorter than 12000 character it will go to short lane else long lane
+  workers: 2 # number of workers = number of requests that can be processed at a time
+  max_queue_depth_per_lane: 200 
+  admission: # controlls what happens when system is overloaded
+    enabled: true # if false everythign will be accepted
+    # If predicted wait + compute > SLO, degrade or reject, and it is decided on the fact which lane the input goes to 
+    default_compute_ms:
+      short: 1200
+      long: 3500
+    degrade:
+      enabled: true
+      max_tokens_floor: 128 # basically if we think that predicted wait + compute > allowed wait time for that request -> then we dont completley reject but limit the output token to 128 so that it gets finished faster
+
+      max_tokens_scale: 0.5 # basically half the number of token assigned originally to that request -> ensure that user still get's the answer but smaller
+    reject:
+      enabled: true
+      retry_after_seconds: 2 # tell the client to try after 2 seconds
