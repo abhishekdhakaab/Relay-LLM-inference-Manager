@@ -144,3 +144,49 @@ async def trace_detail_json(request_id: str) -> Response:
     if not row:
         return Response(content=orjson.dumps({"error": "not_found"}), media_type="application/json", status_code=404)
     return Response(content=orjson.dumps(row), media_type="application/json")
+
+
+@admin.get("/stats.json")
+async def stats_json() -> Response:
+    from app.db.traces_read import get_stats
+    stats = await get_stats()
+    return Response(content=orjson.dumps(stats), media_type="application/json")
+
+
+@admin.get("/metrics")
+async def prometheus_metrics() -> Response:
+    from app.db.traces_read import get_stats
+    stats = await get_stats()
+
+    lines: list[str] = []
+
+    def gauge(name: str, help_text: str, value: Any) -> None:
+        if value is not None:
+            lines.append(f"# HELP {name} {help_text}")
+            lines.append(f"# TYPE {name} gauge")
+            lines.append(f"{name} {value}")
+
+    gauge("relay_requests_total", "Total requests processed", stats.get("total_requests"))
+    gauge("relay_requests_ok", "Requests with 200 status", stats.get("ok_requests"))
+    gauge("relay_requests_rejected", "Requests rejected (429/503)", stats.get("rejected_requests"))
+
+    for pct in ("p50", "p95", "p99"):
+        v = (stats.get("latency") or {}).get(pct)
+        gauge(f"relay_latency_{pct}_ms", f"End-to-end latency {pct}", v)
+
+    for pct in ("p50", "p95", "p99"):
+        v = (stats.get("backend_latency") or {}).get(pct)
+        gauge(f"relay_backend_latency_{pct}_ms", f"Backend latency {pct}", v)
+
+    gauge("relay_cache_exact_hits", "Exact cache hits (estimated)", stats.get("cache_exact_hits"))
+    gauge("relay_cache_semantic_hits", "Semantic cache hits (estimated)", stats.get("cache_semantic_hits"))
+
+    gauge("relay_tokens_total", "Total tokens generated", stats.get("total_tokens"))
+
+    for bucket in ("short", "medium", "long"):
+        v = (stats.get("routing_distribution") or {}).get(bucket)
+        gauge(f"relay_routing_{bucket}_count", f"Requests routed to {bucket} plan", v)
+
+    body = "\n".join(lines) + "\n"
+    return Response(content=body, media_type="text/plain; version=0.0.4; charset=utf-8")
+

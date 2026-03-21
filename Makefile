@@ -1,4 +1,4 @@
-.PHONY: dev up down logs test lint format loadtest eval_baseline eval_candidate eval_gate
+.PHONY: dev up down logs test lint format loadtest benchmark eval_baseline eval_candidate eval_gate
 
 up:
 	docker compose -f infra/docker-compose.yml up -d
@@ -36,4 +36,7 @@ eval_candidate:
 	poetry -C relay run python ../scripts/eval_replay.py --host http://localhost:8000 --gold ../eval/gold.jsonl --out eval/candidate.json --policy-label candidate --baseline-out eval/baseline.json
 
 eval_gate:
-	poetry -C relay run python ../scripts/eval_gate.py --baseline eval/baseline.json --candidate eval/candidate.json
+	poetry -C relay run python scripts/eval_gate.py --baseline eval/baseline.json --candidate eval/candidate.json
+
+benchmark:
+	poetry -C relay run python scripts/benchmark.py --host http://localhost:8000 --gold eval/gold_100.jsonl --out eval/benchmark_report.json

@@ -1,0 +1,1091 @@
+{
+  "timestamp": "2026-03-21T04:39:03Z",
+  "host": "http://localhost:8000",
+  "gold_set": "../eval/gold_100.jsonl",
+  "cold_baseline": {
+    "phase": "cold_baseline",
+    "description": "Unique prompts, cold cache, measures raw backend latency",
+    "total_prompts": 79,
+    "successful": 79,
+    "latency": {
+      "count": 79,
+      "mean_ms": 8811.3,
+      "median_ms": 9706.8,
+      "p50_ms": 9706.8,
+      "p90_ms": 10404.5,
+      "p95_ms": 10433.8,
+      "p99_ms": 10543.4,
+      "min_ms": 1537.7,
+      "max_ms": 10552.1,
+      "stdev_ms": 2524.9
+    },
+    "tokens": {
+      "avg_total": 262.5,
+      "total_generated": 20741
+    },
+    "items": [
+      {
+        "id": "short-01",
+        "status": 200,
+        "latency_ms": 7591.1,
+        "tokens": {
+          "prompt_tokens": 26,
+          "completion_tokens": 63,
+          "total_tokens": 89
+        },
+        "response_preview": "An API gateway acts as a single entry point for all requests to your backend APIs.  It manages and r"
+      },
+      {
+        "id": "short-02",
+        "status": 200,
+        "latency_ms": 1796.8,
+        "tokens": {
+          "prompt_tokens": 22,
+          "completion_tokens": 37,
+          "total_tokens": 59
+        },
+        "response_preview": "Tail latency is the time it takes for a very small percentage of requests to complete, typically tho"
+      },
+      {
+        "id": "short-03",
+        "status": 200,
+        "latency_ms": 10423.7,
+        "tokens": {
+          "prompt_tokens": 24,
+          "completion_tokens": 256,
+          "total_tokens": 280
+        },
+        "response_preview": "## Semantic Caching Explained\n\nSemantic caching goes beyond simply storing website content. It **cac"
+      },
+      {
+        "id": "short-04",
+        "status": 200,
+        "latency_ms": 3057.4,
+        "tokens": {
+          "prompt_tokens": 26,
+          "completion_tokens": 69,
+          "total_tokens": 95
+        },
+        "response_preview": "Rate limiting is like setting a speed limit for how many requests (like website visits or app action"
+      },
+      {
+        "id": "short-05",
+        "status": 200,
+        "latency_ms": 8325.1,
+        "tokens": {
+          "prompt_tokens": 26,
+          "completion_tokens": 202,
+          "total_tokens": 228
+        },
+        "response_preview": "Here are three tradeoffs of caching LLM outputs:\n\n1. **Accuracy vs. Freshness:** Cached outputs migh"
+      },
+      {
+        "id": "short-06",
+        "status": 200,
+        "latency_ms": 3597.7,
+        "tokens": {
+          "prompt_tokens": 24,
+          "completion_tokens": 82,
+          "total_tokens": 106
+        },
+        "response_preview": "A load balancer is a networking device or software that distributes incoming network traffic across "
+      },
+      {
+        "id": "short-07",
+        "status": 200,
+        "latency_ms": 10053.8,
+        "tokens": {
+          "prompt_tokens": 24,
+          "completion_tokens": 256,
+          "total_tokens": 280
+        },
+        "response_preview": "##  TTFB: The Crucial First Impression of Your Website\n\n**TTFB (Time To First Byte)** is the amount "
+      },
+      {
+        "id": "short-08",
+        "status": 200,
+        "latency_ms": 10005.4,
+        "tokens": {
+          "prompt_tokens": 23,
+          "completion_tokens": 256,
+          "total_tokens": 279
+        },
+        "response_preview": "Let's break down backpressure in distributed systems.\n\n**The Core Issue: A Bottleneck Emerges**\n\nIma"
+      },
+      {
+        "id": "short-09",
+        "status": 200,
+        "latency_ms": 2940.7,
+        "tokens": {
+          "prompt_tokens": 24,
+          "completion_tokens": 70,
+          "total_tokens": 94
+        },
+        "response_preview": "The circuit breaker pattern is a design technique used to handle failures in software systems.  \n\nIt"
+      },
+      {
+        "id": "short-10",
+        "status": 200,
+        "latency_ms": 9963.7,
+        "tokens": {
+          "prompt_tokens": 26,
+          "completion_tokens": 256,
+          "total_tokens": 282
+        },
+        "response_preview": "In the context of APIs, idempotency means that **making the same API request multiple times will hav"
+      },
+      {
+        "id": "short-11",
+        "status": 200,
+        "latency_ms": 5502.7,
+        "tokens": {
+          "prompt_tokens": 20,
+          "completion_tokens": 134,
+          "total_tokens": 154
+        },
+        "response_preview": "Eventual consistency is a strategy for data replication where changes made to one copy of data are *"
+      },
+      {
+        "id": "short-12",
+        "status": 200,
+        "latency_ms": 10499.4,
+        "tokens": {
+          "prompt_tokens": 22,
+          "completion_tokens": 256,
+          "total_tokens": 278
+        },
+        "response_preview": "## Token Bucket Algorithm Explained\n\nThe token bucket algorithm is a simple yet effective technique "
+      },
+      {
+        "id": "short-13",
+        "status": 200,
+        "latency_ms": 10197.3,
+        "tokens": {
+          "prompt_tokens": 23,
+          "completion_tokens": 256,
+          "total_tokens": 279
+        },
+        "response_preview": "Imagine you're building a system for sharing information online, like a social media platform. \n\nThe"
+      },
+      {
+        "id": "short-14",
+        "status": 200,
+        "latency_ms": 10101.6,
+        "tokens": {
+          "prompt_tokens": 21,
+          "completion_tokens": 256,
+          "total_tokens": 277
+        },
+        "response_preview": "A reverse proxy acts as an intermediary between clients (like your web browser) and servers. \n\nThink"
+      },
+      {
+        "id": "short-15",
+        "status": 200,
+        "latency_ms": 10321.7,
+        "tokens": {
+          "prompt_tokens": 22,
+          "completion_tokens": 256,
+          "total_tokens": 278
+        },
+        "response_preview": "Here's a breakdown of horizontal and vertical scaling, along with examples to illustrate the concept"
+      },
+      {
+        "id": "short-16",
+        "status": 200,
+        "latency_ms": 10403.8,
+        "tokens": {
+          "prompt_tokens": 22,
+          "completion_tokens": 256,
+          "total_tokens": 278
+        },
+        "response_preview": "Connection pooling is a technique used to improve the performance of database applications.  \n\n**Her"
+      },
+      {
+        "id": "short-17",
+        "status": 200,
+        "latency_ms": 10302.2,
+        "tokens": {
+          "prompt_tokens": 26,
+          "completion_tokens": 256,
+          "total_tokens": 282
+        },
+        "response_preview": "##  gRPC Explained: A Modern Approach to Communication\n\ngRPC stands for **Google Remote Procedure Ca"
+      },
+      {
+        "id": "short-18",
+        "status": 200,
+        "latency_ms": 10252.5,
+        "tokens": {
+          "prompt_tokens": 25,
+          "completion_tokens": 256,
+          "total_tokens": 281
+        },
+        "response_preview": "A message queue is like a digital waiting room for messages.  \n\n**Here's how it works:**\n\n* **Sender"
+      },
+      {
+        "id": "short-19",
+        "status": 200,
+        "latency_ms": 10422.4,
+        "tokens": {
+          "prompt_tokens": 20,
+          "completion_tokens": 256,
+          "total_tokens": 276
+        },
+        "response_preview": "Here's a breakdown of latency and throughput, along with some helpful analogies:\n\n**Latency:**\n\n* **"
+      },
+      {
+        "id": "short-20",
+        "status": 200,
+        "latency_ms": 10383.7,
+        "tokens": {
+          "prompt_tokens": 21,
+          "completion_tokens": 256,
+          "total_tokens": 277
+        },
+        "response_preview": "A service mesh is like a dedicated infrastructure layer built specifically for managing communicatio"
+      },
+      {
+        "id": "short-21",
+        "status": 200,
+        "latency_ms": 3223.2,
+        "tokens": {
+          "prompt_tokens": 25,
+          "completion_tokens": 75,
+          "total_tokens": 100
+        },
+        "response_preview": "Blue-green deployment is a continuous delivery method where two identical environments, \"blue\" and \""
+      },
+      {
+        "id": "short-22",
+        "status": 200,
+        "latency_ms": 9945.6,
+        "tokens": {
+          "prompt_tokens": 21,
+          "completion_tokens": 256,
+          "total_tokens": 277
+        },
+        "response_preview": "Database sharding is a technique for horizontally partitioning a large database into smaller, more m"
+      },
+      {
+        "id": "short-23",
+        "status": 200,
+        "latency_ms": 4889.6,
+        "tokens": {
+          "prompt_tokens": 28,
+          "completion_tokens": 122,
+          "total_tokens": 150
+        },
+        "response_preview": "Here are the definitions you requested:\n\n* **SLO (Service Level Objective):**  A measurable target f"
+      },
+      {
+        "id": "short-24",
+        "status": 200,
+        "latency_ms": 9926.7,
+        "tokens": {
+          "prompt_tokens": 23,
+          "completion_tokens": 256,
+          "total_tokens": 279
+        },
+        "response_preview": "A container orchestration platform is like the conductor of an orchestra, but for software container"
+      },
+      {
+        "id": "short-25",
+        "status": 200,
+        "latency_ms": 9950.5,
+        "tokens": {
+          "prompt_tokens": 23,
+          "completion_tokens": 256,
+          "total_tokens": 279
+        },
+        "response_preview": "## REST vs. GraphQL: A Showdown of APIs\n\nBoth REST and GraphQL are popular ways to build APIs (Appli"
+      },
+      {
+        "id": "short-26",
+        "status": 200,
+        "latency_ms": 10056.7,
+        "tokens": {
+          "prompt_tokens": 23,
+          "completion_tokens": 256,
+          "total_tokens": 279
+        },
+        "response_preview": "## Observability in Software Systems: Seeing the Unseen\n\nObservability goes beyond simply **monitori"
+      },
+      {
+        "id": "short-27",
+        "status": 200,
+        "latency_ms": 9945.6,
+        "tokens": {
+          "prompt_tokens": 25,
+          "completion_tokens": 256,
+          "total_tokens": 281
+        },
+        "response_preview": "## Distributed Locks: Keeping Things in Order Across Multiple Processes\n\nA **distributed lock** is a"
+      },
+      {
+        "id": "short-28",
+        "status": 200,
+        "latency_ms": 9962.2,
+        "tokens": {
+          "prompt_tokens": 23,
+          "completion_tokens": 256,
+          "total_tokens": 279
+        },
+        "response_preview": "A write-ahead log (WAL) is a critical component in many database systems, particularly those that pr"
+      },
+      {
+        "id": "short-29",
+        "status": 200,
+        "latency_ms": 8078.9,
+        "tokens": {
+          "prompt_tokens": 22,
+          "completion_tokens": 207,
+          "total_tokens": 229
+        },
+        "response_preview": "The sidecar pattern is a design pattern used in microservices architecture where a dedicated \"sideca"
+      },
+      {
+        "id": "short-30",
+        "status": 200,
+        "latency_ms": 10101.9,
+        "tokens": {
+          "prompt_tokens": 25,
+          "completion_tokens": 256,
+          "total_tokens": 281
+        },
+        "response_preview": "## Feature Flagging: A Powerful Tool for Software Development\n\nFeature flagging, also known as \"feat"
+      },
+      {
+        "id": "med-01",
+        "status": 200,
+        "latency_ms": 10429.7,
+        "tokens": {
+          "prompt_tokens": 63,
+          "completion_tokens": 256,
+          "total_tokens": 319
+        },
+        "response_preview": "Here's a breakdown of a typical microservices-based e-commerce platform architecture, focusing on se"
+      },
+      {
+        "id": "med-02",
+        "status": 200,
+        "latency_ms": 10540.9,
+        "tokens": {
+          "prompt_tokens": 63,
+          "completion_tokens": 256,
+          "total_tokens": 319
+        },
+        "response_preview": "Here's a breakdown of how a Content Delivery Network (CDN) works, from a user's request to the final"
+      },
+      {
+        "id": "med-03",
+        "status": 200,
+        "latency_ms": 10346.1,
+        "tokens": {
+          "prompt_tokens": 60,
+          "completion_tokens": 256,
+          "total_tokens": 316
+        },
+        "response_preview": "## Database Replication Strategies: A Comparative Look\n\nHere's a breakdown of three common database "
+      },
+      {
+        "id": "med-04",
+        "status": 200,
+        "latency_ms": 10088.1,
+        "tokens": {
+          "prompt_tokens": 63,
+          "completion_tokens": 256,
+          "total_tokens": 319
+        },
+        "response_preview": "## Kubernetes Orchestration: Scheduling, Autoscaling, and Self-Healing\n\nKubernetes masterfully manag"
+      },
+      {
+        "id": "med-05",
+        "status": 200,
+        "latency_ms": 10141.5,
+        "tokens": {
+          "prompt_tokens": 59,
+          "completion_tokens": 256,
+          "total_tokens": 315
+        },
+        "response_preview": "Here's a breakdown of the complete lifecycle of an HTTP request, navigating through the layers of yo"
+      },
+      {
+        "id": "med-06",
+        "status": 200,
+        "latency_ms": 10191.9,
+        "tokens": {
+          "prompt_tokens": 61,
+          "completion_tokens": 256,
+          "total_tokens": 317
+        },
+        "response_preview": "Let's break down the OAuth 2.0 Authorization Code Flow step-by-step:\n\n**Roles:**\n\n* **Resource Owner"
+      },
+      {
+        "id": "med-07",
+        "status": 200,
+        "latency_ms": 10232.2,
+        "tokens": {
+          "prompt_tokens": 61,
+          "completion_tokens": 256,
+          "total_tokens": 317
+        },
+        "response_preview": "## Event-Driven vs. Request-Response Architecture\n\n**Request-Response Architecture:**\n\n* **Mechanism"
+      },
+      {
+        "id": "med-08",
+        "status": 200,
+        "latency_ms": 10407.4,
+        "tokens": {
+          "prompt_tokens": 65,
+          "completion_tokens": 256,
+          "total_tokens": 321
+        },
+        "response_preview": "## Redis in Production: A Deep Dive\n\nRedis is a powerful in-memory data store often used as a distri"
+      },
+      {
+        "id": "med-09",
+        "status": 200,
+        "latency_ms": 10552.1,
+        "tokens": {
+          "prompt_tokens": 55,
+          "completion_tokens": 256,
+          "total_tokens": 311
+        },
+        "response_preview": "##  CI/CD Pipelines for Production Web Applications: A Step-by-Step Guide\n\nA CI/CD pipeline automate"
+      },
+      {
+        "id": "med-10",
+        "status": 200,
+        "latency_ms": 10469.8,
+        "tokens": {
+          "prompt_tokens": 63,
+          "completion_tokens": 256,
+          "total_tokens": 319
+        },
+        "response_preview": "Let's dive into the world of B-trees, those unsung heroes of database performance!\n\n**Understanding "
+      },
+      {
+        "id": "med-11",
+        "status": 200,
+        "latency_ms": 9690.5,
+        "tokens": {
+          "prompt_tokens": 60,
+          "completion_tokens": 256,
+          "total_tokens": 316
+        },
+        "response_preview": "## Real-Time Notification System Architecture for Millions of Users\n\nBuilding a real-time notificati"
+      },
+      {
+        "id": "med-12",
+        "status": 200,
+        "latency_ms": 9681.5,
+        "tokens": {
+          "prompt_tokens": 57,
+          "completion_tokens": 256,
+          "total_tokens": 313
+        },
+        "response_preview": "##  The Journey of a Search Query: From Click to Result\n\nImagine you type \"best pizza near me\" into "
+      },
+      {
+        "id": "med-13",
+        "status": 200,
+        "latency_ms": 9706.8,
+        "tokens": {
+          "prompt_tokens": 59,
+          "completion_tokens": 256,
+          "total_tokens": 315
+        },
+        "response_preview": "## Rate Limiting at Scale in an API Gateway\n\nRate limiting is crucial for any successful API gateway"
+      },
+      {
+        "id": "med-14",
+        "status": 200,
+        "latency_ms": 9740.7,
+        "tokens": {
+          "prompt_tokens": 53,
+          "completion_tokens": 256,
+          "total_tokens": 309
+        },
+        "response_preview": "## Monolithic vs. Microservices Architecture: A Tradeoff Analysis\n\nChoosing between a monolithic and"
+      },
+      {
+        "id": "med-15",
+        "status": 200,
+        "latency_ms": 9937.9,
+        "tokens": {
+          "prompt_tokens": 62,
+          "completion_tokens": 256,
+          "total_tokens": 318
+        },
+        "response_preview": "##  The Modern Observability Stack: A Symphony of Data\n\nModern observability stacks empower teams to"
+      },
+      {
+        "id": "long-01",
+        "status": 200,
+        "latency_ms": 10095.7,
+        "tokens": {
+          "prompt_tokens": 133,
+          "completion_tokens": 256,
+          "total_tokens": 389
+        },
+        "response_preview": "## Multi-Tenant LLM Inference Platform Technical Design Document\n\n**1. Introduction**\n\nThis document"
+      },
+      {
+        "id": "long-02",
+        "status": 200,
+        "latency_ms": 10099.8,
+        "tokens": {
+          "prompt_tokens": 145,
+          "completion_tokens": 256,
+          "total_tokens": 401
+        },
+        "response_preview": "## A Deep Dive into Distributed Consensus Algorithms\n\nDistributed consensus is the cornerstone of re"
+      },
+      {
+        "id": "long-03",
+        "status": 200,
+        "latency_ms": 10129.8,
+        "tokens": {
+          "prompt_tokens": 167,
+          "completion_tokens": 256,
+          "total_tokens": 423
+        },
+        "response_preview": "## Building Production-Grade ML Inference Pipelines: A Comprehensive Guide\n\nDeploying machine learni"
+      },
+      {
+        "id": "long-04",
+        "status": 200,
+        "latency_ms": 10105.9,
+        "tokens": {
+          "prompt_tokens": 163,
+          "completion_tokens": 256,
+          "total_tokens": 419
+        },
+        "response_preview": "## Vector Database Showdown: A Deep Dive for Production Semantic Search\n\nSemantic search is revoluti"
+      },
+      {
+        "id": "long-05",
+        "status": 200,
+        "latency_ms": 10107.0,
+        "tokens": {
+          "prompt_tokens": 154,
+          "completion_tokens": 256,
+          "total_tokens": 410
+        },
+        "response_preview": "## Post-Mortem Analysis: System Outage - [Date]\n\n**System Affected:** E-commerce Platform (Microserv"
+      },
+      {
+        "id": "sem-b-01",
+        "status": 200,
+        "latency_ms": 1995.5,
+        "tokens": {
+          "prompt_tokens": 27,
+          "completion_tokens": 47,
+          "total_tokens": 74
+        },
+        "response_preview": "An API gateway acts as a single entry point for all requests to your backend services. It manages an"
+      },
+      {
+        "id": "sem-a-02",
+        "status": 200,
+        "latency_ms": 1537.7,
+        "tokens": {
+          "prompt_tokens": 26,
+          "completion_tokens": 35,
+          "total_tokens": 61
+        },
+        "response_preview": "Tail latency is the time it takes for a small percentage of requests to complete, typically the slow"
+      },
+      {
+        "id": "sem-b-02",
+        "status": 200,
+        "latency_ms": 1802.0,
+        "tokens": {
+          "prompt_tokens": 23,
+          "completion_tokens": 41,
+          "total_tokens": 64
+        },
+        "response_preview": "Tail latency is the time it takes for a small percentage (typically 95th or 99th) of requests to be "
+      },
+      {
+        "id": "sem-a-03",
+        "status": 200,
+        "latency_ms": 8182.1,
+        "tokens": {
+          "prompt_tokens": 26,
+          "completion_tokens": 219,
+          "total_tokens": 245
+        },
+        "response_preview": "A cache key is like a unique identifier used to store and retrieve data in a cache.  Think of it as "
+      },
+      {
+        "id": "sem-b-03",
+        "status": 200,
+        "latency_ms": 9540.6,
+        "tokens": {
+          "prompt_tokens": 28,
+          "completion_tokens": 256,
+          "total_tokens": 284
+        },
+        "response_preview": "Here are 2 examples of cache keys and explanations:\n\n**1.  `product_details_12345`**\n\n* **What it is"
+      },
+      {
+        "id": "sem-a-04",
+        "status": 200,
+        "latency_ms": 9555.4,
+        "tokens": {
+          "prompt_tokens": 22,
+          "completion_tokens": 256,
+          "total_tokens": 278
+        },
+        "response_preview": "## Admission Control in Distributed Systems\n\nAdmission control in distributed systems is like a boun"
+      },
+      {
+        "id": "sem-b-04",
+        "status": 200,
+        "latency_ms": 9518.5,
+        "tokens": {
+          "prompt_tokens": 26,
+          "completion_tokens": 256,
+          "total_tokens": 282
+        },
+        "response_preview": "## Admission Control in Distributed Systems\n\nAdmission control in distributed systems is a mechanism"
+      },
+      {
+        "id": "sem-a-05",
+        "status": 200,
+        "latency_ms": 9506.9,
+        "tokens": {
+          "prompt_tokens": 23,
+          "completion_tokens": 256,
+          "total_tokens": 279
+        },
+        "response_preview": "Connection pooling offers several key benefits for your applications:\n\n**1. Reduced Connection Overh"
+      },
+      {
+        "id": "sem-b-05",
+        "status": 200,
+        "latency_ms": 9534.2,
+        "tokens": {
+          "prompt_tokens": 23,
+          "completion_tokens": 256,
+          "total_tokens": 279
+        },
+        "response_preview": "Connection pooling is a powerful technique in database management that offers several key advantages"
+      },
+      {
+        "id": "sem-a-06",
+        "status": 200,
+        "latency_ms": 9540.1,
+        "tokens": {
+          "prompt_tokens": 24,
+          "completion_tokens": 256,
+          "total_tokens": 280
+        },
+        "response_preview": "Here's a breakdown of the differences between concurrency and parallelism, along with examples to il"
+      },
+      {
+        "id": "sem-b-06",
+        "status": 200,
+        "latency_ms": 9530.3,
+        "tokens": {
+          "prompt_tokens": 24,
+          "completion_tokens": 256,
+          "total_tokens": 280
+        },
+        "response_preview": "## Concurrency vs Parallelism: Not the Same, But Close\n\nConcurrency and parallelism are often used i"
+      },
+      {
+        "id": "sem-a-07",
+        "status": 200,
+        "latency_ms": 9665.0,
+        "tokens": {
+          "prompt_tokens": 21,
+          "completion_tokens": 256,
+          "total_tokens": 277
+        },
+        "response_preview": "Let's break down how consistent hashing works.\n\n**The Problem:**\n\nImagine you have a large dataset a"
+      },
+      {
+        "id": "sem-b-07",
+        "status": 200,
+        "latency_ms": 9884.2,
+        "tokens": {
+          "prompt_tokens": 24,
+          "completion_tokens": 256,
+          "total_tokens": 280
+        },
+        "response_preview": "## Consistent Hashing Explained\n\nConsistent hashing is a technique used to distribute data across mu"
+      },
+      {
+        "id": "sem-a-08",
+        "status": 200,
+        "latency_ms": 9773.5,
+        "tokens": {
+          "prompt_tokens": 22,
+          "completion_tokens": 256,
+          "total_tokens": 278
+        },
+        "response_preview": "A dead letter queue (DLQ) is like a \"holding area\" for messages that couldn't be processed successfu"
+      },
+      {
+        "id": "sem-b-08",
+        "status": 200,
+        "latency_ms": 9645.4,
+        "tokens": {
+          "prompt_tokens": 25,
+          "completion_tokens": 256,
+          "total_tokens": 281
+        },
+        "response_preview": "## Dead Letter Queues (DLQs): The Safety Net for Your Messaging System\n\nImagine your messaging syste"
+      },
+      {
+        "id": "sem-a-09",
+        "status": 200,
+        "latency_ms": 9645.5,
+        "tokens": {
+          "prompt_tokens": 24,
+          "completion_tokens": 256,
+          "total_tokens": 280
+        },
+        "response_preview": "The Bulkhead Pattern in microservices is a design technique used to isolate resources and limit the "
+      },
+      {
+        "id": "sem-b-09",
+        "status": 200,
+        "latency_ms": 9641.2,
+        "tokens": {
+          "prompt_tokens": 27,
+          "completion_tokens": 256,
+          "total_tokens": 283
+        },
+        "response_preview": "## The Bulkhead Pattern in Microservices Architecture\n\nThe bulkhead pattern is a design principle us"
+      },
+      {
+        "id": "sem-a-10",
+        "status": 200,
+        "latency_ms": 9600.0,
+        "tokens": {
+          "prompt_tokens": 22,
+          "completion_tokens": 256,
+          "total_tokens": 278
+        },
+        "response_preview": "A Bloom filter is a probabilistic data structure used to test if an element is a member of a set. \n\n"
+      },
+      {
+        "id": "sem-b-10",
+        "status": 200,
+        "latency_ms": 9642.8,
+        "tokens": {
+          "prompt_tokens": 23,
+          "completion_tokens": 256,
+          "total_tokens": 279
+        },
+        "response_preview": "## Bloom Filters Explained\n\nBloom filters are a probabilistic data structure used to test whether an"
+      },
+      {
+        "id": "burst-01",
+        "status": 200,
+        "latency_ms": 9618.0,
+        "tokens": {
+          "prompt_tokens": 21,
+          "completion_tokens": 256,
+          "total_tokens": 277
+        },
+        "response_preview": "A microservice is an independently deployable, small piece of software that performs a specific func"
+      },
+      {
+        "id": "burst-02",
+        "status": 200,
+        "latency_ms": 1639.5,
+        "tokens": {
+          "prompt_tokens": 22,
+          "completion_tokens": 36,
+          "total_tokens": 58
+        },
+        "response_preview": "An ORM (Object-Relational Mapper) is a software tool that simplifies the interaction between object-"
+      },
+      {
+        "id": "burst-03",
+        "status": 200,
+        "latency_ms": 9490.3,
+        "tokens": {
+          "prompt_tokens": 20,
+          "completion_tokens": 256,
+          "total_tokens": 276
+        },
+        "response_preview": "Let's break down webhooks:\n\n**In Essence:**\n\nA webhook is like an automated notification system for "
+      },
+      {
+        "id": "burst-04",
+        "status": 200,
+        "latency_ms": 9551.4,
+        "tokens": {
+          "prompt_tokens": 21,
+          "completion_tokens": 256,
+          "total_tokens": 277
+        },
+        "response_preview": "## Pub/Sub Messaging Explained\n\nPub/Sub, short for \"publish/subscribe,\" is a lightweight messaging p"
+      },
+      {
+        "id": "burst-05",
+        "status": 200,
+        "latency_ms": 9596.6,
+        "tokens": {
+          "prompt_tokens": 20,
+          "completion_tokens": 256,
+          "total_tokens": 276
+        },
+        "response_preview": "Let's break down the concept of containers.\n\n**Imagine a self-contained package for your software.**"
+      },
+      {
+        "id": "burst-06",
+        "status": 200,
+        "latency_ms": 6577.6,
+        "tokens": {
+          "prompt_tokens": 21,
+          "completion_tokens": 174,
+          "total_tokens": 195
+        },
+        "response_preview": "Imagine you want to visit a website, like \"google.com\".  Your computer doesn't actually know where t"
+      },
+      {
+        "id": "burst-07",
+        "status": 200,
+        "latency_ms": 9579.0,
+        "tokens": {
+          "prompt_tokens": 20,
+          "completion_tokens": 256,
+          "total_tokens": 276
+        },
+        "response_preview": "**CDN stands for Content Delivery Network.**\n\n**What is a CDN?**\n\nA content delivery network (CDN) i"
+      },
+      {
+        "id": "burst-08",
+        "status": 200,
+        "latency_ms": 8128.8,
+        "tokens": {
+          "prompt_tokens": 19,
+          "completion_tokens": 216,
+          "total_tokens": 235
+        },
+        "response_preview": "Middleware is like a waiter in a restaurant.\n\n**Imagine this:**\n\n* You (the user) want to order food"
+      },
+      {
+        "id": "burst-09",
+        "status": 200,
+        "latency_ms": 9673.8,
+        "tokens": {
+          "prompt_tokens": 23,
+          "completion_tokens": 256,
+          "total_tokens": 279
+        },
+        "response_preview": "Imagine a giant library with millions of books, but no card catalog. Finding a specific book would b"
+      },
+      {
+        "id": "burst-10",
+        "status": 200,
+        "latency_ms": 9575.4,
+        "tokens": {
+          "prompt_tokens": 22,
+          "completion_tokens": 256,
+          "total_tokens": 278
+        },
+        "response_preview": "Let's break down the concepts of \"stateless\" and \"stateful\" in programming and computer systems:\n\n**"
+      }
+    ]
+  },
+  "exact_cache": {
+    "phase": "exact_cache",
+    "description": "Re-sent identical prompts from phase 1 to test exact cache",
+    "total_prompts": 10,
+    "cache_hits": 0,
+    "cache_hit_rate": 0.0,
+    "latency": {
+      "count": 10,
+      "mean_ms": 5610.2,
+      "median_ms": 5358.2,
+      "p50_ms": 5358.2,
+      "p90_ms": 9567.3,
+      "p95_ms": 9573.7,
+      "p99_ms": 9578.8,
+      "min_ms": 1769.3,
+      "max_ms": 9580.1,
+      "stdev_ms": 3511.0
+    },
+    "items": [
+      {
+        "id": "exact-01",
+        "latency_ms": 1873.4,
+        "likely_cache_hit": false
+      },
+      {
+        "id": "exact-02",
+        "latency_ms": 1769.3,
+        "likely_cache_hit": false
+      },
+      {
+        "id": "exact-03",
+        "latency_ms": 7597.4,
+        "likely_cache_hit": false
+      },
+      {
+        "id": "exact-04",
+        "latency_ms": 2418.7,
+        "likely_cache_hit": false
+      },
+      {
+        "id": "exact-05",
+        "latency_ms": 8043.3,
+        "likely_cache_hit": false
+      },
+      {
+        "id": "exact-06",
+        "latency_ms": 3119.1,
+        "likely_cache_hit": false
+      },
+      {
+        "id": "exact-07",
+        "latency_ms": 9541.8,
+        "likely_cache_hit": false
+      },
+      {
+        "id": "exact-08",
+        "latency_ms": 9580.1,
+        "likely_cache_hit": false
+      },
+      {
+        "id": "exact-09",
+        "latency_ms": 2592.8,
+        "likely_cache_hit": false
+      },
+      {
+        "id": "exact-10",
+        "latency_ms": 9565.9,
+        "likely_cache_hit": false
+      }
+    ]
+  },
+  "semantic_cache": {
+    "phase": "semantic_cache",
+    "description": "Rephrased prompts testing pgvector semantic similarity lookup",
+    "total_prompts": 10,
+    "semantic_hits": 10,
+    "semantic_hit_rate": 100.0,
+    "latency": {
+      "count": 10,
+      "mean_ms": 10.5,
+      "median_ms": 8.7,
+      "p50_ms": 8.7,
+      "p90_ms": 13.1,
+      "p95_ms": 17.6,
+      "p99_ms": 21.3,
+      "min_ms": 7.8,
+      "max_ms": 22.2,
+      "stdev_ms": 4.4
+    },
+    "items": [
+      {
+        "id": "sem-b-01",
+        "latency_ms": 22.2,
+        "likely_semantic_hit": true
+      },
+      {
+        "id": "sem-b-02",
+        "latency_ms": 11.3,
+        "likely_semantic_hit": true
+      },
+      {
+        "id": "sem-b-03",
+        "latency_ms": 12.1,
+        "likely_semantic_hit": true
+      },
+      {
+        "id": "sem-b-04",
+        "latency_ms": 10.7,
+        "likely_semantic_hit": true
+      },
+      {
+        "id": "sem-b-05",
+        "latency_ms": 8.5,
+        "likely_semantic_hit": true
+      },
+      {
+        "id": "sem-b-06",
+        "latency_ms": 8.9,
+        "likely_semantic_hit": true
+      },
+      {
+        "id": "sem-b-07",
+        "latency_ms": 8.1,
+        "likely_semantic_hit": true
+      },
+      {
+        "id": "sem-b-08",
+        "latency_ms": 7.8,
+        "likely_semantic_hit": true
+      },
+      {
+        "id": "sem-b-09",
+        "latency_ms": 7.8,
+        "likely_semantic_hit": true
+      },
+      {
+        "id": "sem-b-10",
+        "latency_ms": 8.1,
+        "likely_semantic_hit": true
+      }
+    ]
+  },
+  "routing_distribution": {
+    "phase": "routing_distribution",
+    "description": "Latency by prompt length bucket (short/medium/long)",
+    "buckets": {
+      "short": {
+        "count": 28,
+        "avg_latency_ms": 6213.4,
+        "p95_latency_ms": 9696.8
+      },
+      "medium": {
+        "count": 15,
+        "avg_latency_ms": 9820.2,
+        "p95_latency_ms": 9972.6
+      },
+      "long": {
+        "count": 5,
+        "avg_latency_ms": 10182.6,
+        "p95_latency_ms": 10291.4
+      }
+    }
+  },
+  "burst_load": {
+    "phase": "burst_load",
+    "description": "10 concurrent requests testing scheduler and admission control",
+    "total_requests": 10,
+    "successful": 10,
+    "rejected_429": 0,
+    "overloaded_503": 0,
+    "wall_time_ms": 81205.0,
+    "throughput_rps": 0.1,
+    "latency": {
+      "count": 10,
+      "mean_ms": 41754.0,
+      "median_ms": 41790.9,
+      "p50_ms": 41790.9,
+      "p90_ms": 73525.4,
+      "p95_ms": 77341.4,
+      "p99_ms": 80394.2,
+      "min_ms": 1577.0,
+      "max_ms": 81157.4,
+      "stdev_ms": 26427.6
+    }
+  },
+  "resume_bullets": [
+    "Built a policy-driven LLM inference gateway serving 79 eval prompts with p50=9707ms / p95=10434ms / p99=10543ms end-to-end latency",
+    "Implemented dual-layer caching (Redis exact + pgvector semantic) achieving 0% exact hit rate with 1.8x latency reduction on repeated queries",
+    "Deployed semantic cache using pgvector embeddings with 100% hit rate on rephrased queries, reducing redundant inference by identifying near-duplicate prompts",
+    "Engineered two-lane fair scheduler with admission control handling 10 concurrent requests at 0.1 req/s with p95=77341ms (10/10 served, rest gracefully degraded/rejected)",
+    "Implemented policy-driven routing classifying prompts into length tiers (short avg=6213ms, long avg=10183ms) with per-request decision traces and YAML-configurable execution plans",
+    "Built regression harness with quality/latency/cost gates in CI, preventing silent regressions across policy changes"
+  ]
+}

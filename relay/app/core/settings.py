@@ -11,14 +11,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 # -------------------------
 # Policy schema
 # -------------------------
-class TenantCaching(BaseModel):
-    exact_enabled: bool = True
-    semantic_enabled: bool = False
 
 
-class TenantPolicy(BaseModel):
-    latency_slo_ms: int = 8000
-    caching: TenantCaching = Field(default_factory=TenantCaching)
+
 
 
 
@@ -26,7 +21,7 @@ class TenantPolicy(BaseModel):
 class SemanticCaching(BaseModel):
     enabled : bool = False
     threshold :float = 0.90
-    ttl_seconds : int = 1800
+    ttl_seconds : int = 18000
     verifier : str ='off'
 
 class TenantCaching(BaseModel):
@@ -59,6 +54,9 @@ class SchedulerConfig(BaseModel):
     admission: SchedulerAdmission = Field(default_factory = SchedulerAdmission)
 
 
+class TenantPolicy(BaseModel):
+    latency_slo_ms: int = 8000
+    caching: TenantCaching = Field(default_factory=TenantCaching)
 
 class PolicyConfig(BaseModel):
     policy_version: str
@@ -98,9 +96,9 @@ class Settings(BaseSettings):
     ollama_model: str = "llama3.2:1b"
 
 
-    exact_cache_ttl_seconds : int = 300
+    exact_cache_ttl_seconds : int = 3600
 
-    backend_mode : str ="mock" ## added for github action CI, as we dont have ollama over github action
+    backend_mode : str ="mock" ## chane it ollama for real output, added for github action CI, as we dont have ollama over github action
 
 
     semantic_cache_ttl_seconds : int =1800

@@ -154,7 +154,7 @@ async def chat_completions(
             if similarity>=threshold : 
                 resp = ChatCompletionsResponse.model_validate(row['response_json'])
 
-                latency_ms = int((time.perft_counter()-t0)*1000)
+                latency_ms = int((time.perf_counter()-t0)*1000)
                 cache_info['semantic'].update(
                                         {
                         "hit": True,
@@ -254,7 +254,7 @@ async def chat_completions(
                 "request_json": orjson.dumps(req.model_dump()).decode("utf-8"),
                 "response_json": "null",
                 "error_json": orjson.dumps(
-                    {"type": "rate_limited", "detail": "Predicted SLO miss; retry later", "retry_after_seconds": reject_retry_after}
+                    {"type": "rate_limited", "detail": "Predicted SLO miss; retry later", "retry_after_seconds": rejected_retry_after}
                 ).decode("utf-8"),
                 "policy_version": policy.policy_version,
                 "plan_json": orjson.dumps(plan).decode("utf-8"),
@@ -262,7 +262,7 @@ async def chat_completions(
                 "cache_json": orjson.dumps(cache_info).decode("utf-8"),
             }
         )
-        raise HTTPException(status_code=429, detail={"retry_after_seconds": reject_retry_after})
+        raise HTTPException(status_code=429, detail={"retry_after_seconds": rejected_retry_after})
 
 
 

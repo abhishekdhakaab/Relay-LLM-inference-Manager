@@ -88,32 +88,3 @@ async def semantic_store(
         res = await session.execute(q, params)
         await session.commit()
         return str(res.scalar_one())
-    
-
-
-async def semantic_score(*,tenant_id:str, plan_sig:str, request_hash:str,prompt_text:str,embedding:list[float], response_obj:dict[str,Any], ttl_seconds:int)->str:
-    expires_at = datetime.now(timezone.utc) + timedelta(seconds = ttl_seconds)
-
-    q = text(
-        """
-        INSERT INTO semantic_cache_entries
-          (tenant_id, plan_sig, request_hash, prompt_text, embedding, response_json, expires_at)
-        VALUES
-          (:tenant_id, :plan_sig, :request_hash, :prompt_text, (:embedding)::vector, CAST(:response_json AS JSONB), :expires_at)
-        RETURNING id::text AS id
-        """
-    )
-
-    params = {
-        "tenant_id": tenant_id,
-        "plan_sig": plan_sig,
-        "request_hash": request_hash,
-        "prompt_text": prompt_text,
-        "embedding": _vec_literal(embedding),
-        "response_json": orjson.dumps(response_obj).decode("utf-8"),
-        "expires_at": expires_at,
-    }
-    async with get_sessionmaker()() as session:
-        res = await session.execute(q,params)
-        await session.commit()
-        return str(res.scalar_one())

@@ -1,0 +1,135 @@
+{"id":"s01","tenant_id":"default","messages":[{"role":"user","content":"Explain what an API gateway does in 2 sentences."}],"tags":["short","routing","cold"]}
+{"id":"s02","tenant_id":"default","messages":[{"role":"user","content":"Define tail latency in one sentence."}],"tags":["short","routing","cold"]}
+{"id":"s03","tenant_id":"default","messages":[{"role":"user","content":"What is semantic caching? Give one risk."}],"tags":["short","routing","cold"]}
+{"id":"s04","tenant_id":"default","messages":[{"role":"user","content":"Explain rate limiting for a beginner in 3 sentences."}],"tags":["short","routing","cold"]}
+{"id":"s05","tenant_id":"default","messages":[{"role":"user","content":"List 3 tradeoffs of caching LLM outputs."}],"tags":["short","routing","cold"]}
+{"id":"s06","tenant_id":"default","messages":[{"role":"user","content":"What is a load balancer? One paragraph."}],"tags":["short","routing","cold"]}
+{"id":"s07","tenant_id":"default","messages":[{"role":"user","content":"Define TTFB and why it matters."}],"tags":["short","routing","cold"]}
+{"id":"s08","tenant_id":"default","messages":[{"role":"user","content":"What is backpressure in distributed systems?"}],"tags":["short","routing","cold"]}
+{"id":"s09","tenant_id":"default","messages":[{"role":"user","content":"Explain circuit breaker pattern in 2 sentences."}],"tags":["short","routing","cold"]}
+{"id":"s10","tenant_id":"default","messages":[{"role":"user","content":"What does idempotent mean in the context of APIs?"}],"tags":["short","routing","cold"]}
+{"id":"s11","tenant_id":"default","messages":[{"role":"user","content":"Define eventual consistency briefly."}],"tags":["short","routing","cold"]}
+{"id":"s12","tenant_id":"default","messages":[{"role":"user","content":"What is a token bucket algorithm?"}],"tags":["short","routing","cold"]}
+{"id":"s13","tenant_id":"default","messages":[{"role":"user","content":"Explain the CAP theorem in simple terms."}],"tags":["short","routing","cold"]}
+{"id":"s14","tenant_id":"default","messages":[{"role":"user","content":"What is a reverse proxy?"}],"tags":["short","routing","cold"]}
+{"id":"s15","tenant_id":"default","messages":[{"role":"user","content":"Define horizontal scaling vs vertical scaling."}],"tags":["short","routing","cold"]}
+{"id":"s16","tenant_id":"default","messages":[{"role":"user","content":"What is connection pooling in databases?"}],"tags":["short","routing","cold"]}
+{"id":"s17","tenant_id":"default","messages":[{"role":"user","content":"Explain what gRPC is and when to use it."}],"tags":["short","routing","cold"]}
+{"id":"s18","tenant_id":"default","messages":[{"role":"user","content":"What is a message queue? Give one example."}],"tags":["short","routing","cold"]}
+{"id":"s19","tenant_id":"default","messages":[{"role":"user","content":"Define latency vs throughput."}],"tags":["short","routing","cold"]}
+{"id":"s20","tenant_id":"default","messages":[{"role":"user","content":"What is a service mesh?"}],"tags":["short","routing","cold"]}
+{"id":"s21","tenant_id":"default","messages":[{"role":"user","content":"Explain blue-green deployment in 2 sentences."}],"tags":["short","routing","cold"]}
+{"id":"s22","tenant_id":"default","messages":[{"role":"user","content":"What is database sharding?"}],"tags":["short","routing","cold"]}
+{"id":"s23","tenant_id":"default","messages":[{"role":"user","content":"Define SLO, SLA, and SLI in one sentence each."}],"tags":["short","routing","cold"]}
+{"id":"s24","tenant_id":"default","messages":[{"role":"user","content":"What is a container orchestration platform?"}],"tags":["short","routing","cold"]}
+{"id":"s25","tenant_id":"default","messages":[{"role":"user","content":"Explain the difference between REST and GraphQL."}],"tags":["short","routing","cold"]}
+{"id":"s26","tenant_id":"default","messages":[{"role":"user","content":"What is observability in software systems?"}],"tags":["short","routing","cold"]}
+{"id":"s27","tenant_id":"default","messages":[{"role":"user","content":"Define a distributed lock and when you need one."}],"tags":["short","routing","cold"]}
+{"id":"s28","tenant_id":"default","messages":[{"role":"user","content":"What is a write-ahead log?"}],"tags":["short","routing","cold"]}
+{"id":"s29","tenant_id":"default","messages":[{"role":"user","content":"Explain the sidecar pattern briefly."}],"tags":["short","routing","cold"]}
+{"id":"s30","tenant_id":"default","messages":[{"role":"user","content":"What is feature flagging and why use it?"}],"tags":["short","routing","cold"]}
+{"id":"s31","tenant_id":"default","messages":[{"role":"user","content":"What is a microservice?"}],"tags":["short","routing","cold"]}
+{"id":"s32","tenant_id":"default","messages":[{"role":"user","content":"Define an ORM in one sentence."}],"tags":["short","routing","cold"]}
+{"id":"s33","tenant_id":"default","messages":[{"role":"user","content":"What is a webhook?"}],"tags":["short","routing","cold"]}
+{"id":"s34","tenant_id":"default","messages":[{"role":"user","content":"Explain pub/sub messaging."}],"tags":["short","routing","cold"]}
+{"id":"s35","tenant_id":"default","messages":[{"role":"user","content":"What is a container?"}],"tags":["short","routing","cold"]}
+{"id":"s36","tenant_id":"default","messages":[{"role":"user","content":"Define DNS in simple terms."}],"tags":["short","routing","cold"]}
+{"id":"s37","tenant_id":"default","messages":[{"role":"user","content":"What is a CDN?"}],"tags":["short","routing","cold"]}
+{"id":"s38","tenant_id":"default","messages":[{"role":"user","content":"Explain middleware briefly."}],"tags":["short","routing","cold"]}
+{"id":"s39","tenant_id":"default","messages":[{"role":"user","content":"What is an index in a database?"}],"tags":["short","routing","cold"]}
+{"id":"s40","tenant_id":"default","messages":[{"role":"user","content":"Define stateless vs stateful."}],"tags":["short","routing","cold"]}
+{"id":"m01","tenant_id":"default","messages":[{"role":"user","content":"Explain the architecture of a typical microservices-based e-commerce platform. Cover the main services, how they communicate, and what happens when a user places an order. Include at least 5 services and describe the data flow between them."}],"tags":["medium","routing","cold"]}
+{"id":"m02","tenant_id":"default","messages":[{"role":"user","content":"Describe how a CDN works end-to-end. Start from a user requesting a webpage, explain DNS resolution, edge server selection, cache hit vs miss scenarios, origin fetch, and cache invalidation strategies. Be specific about each step."}],"tags":["medium","routing","cold"]}
+{"id":"m03","tenant_id":"default","messages":[{"role":"user","content":"Compare and contrast three different database replication strategies: single-leader, multi-leader, and leaderless. For each, explain the consistency model, failure handling, conflict resolution approach, and ideal use cases. Provide concrete examples."}],"tags":["medium","routing","cold"]}
+{"id":"m04","tenant_id":"default","messages":[{"role":"user","content":"Explain how Kubernetes manages pod scheduling, autoscaling, and self-healing. Describe the role of the scheduler, HPA, and liveness/readiness probes. Include a scenario where a node fails and explain what happens to the pods."}],"tags":["medium","routing","cold"]}
+{"id":"m05","tenant_id":"default","messages":[{"role":"user","content":"Describe the complete lifecycle of an HTTP request from the browser to a backend API behind a load balancer. Include DNS lookup, TCP handshake, TLS negotiation, load balancer routing, application processing, database query, and response construction."}],"tags":["medium","routing","cold"]}
+{"id":"m06","tenant_id":"default","messages":[{"role":"user","content":"Explain how OAuth 2.0 authorization code flow works step by step. Include the roles of the client, resource owner, authorization server, and resource server. Describe the token exchange, refresh token mechanism, and common security pitfalls."}],"tags":["medium","routing","cold"]}
+{"id":"m07","tenant_id":"default","messages":[{"role":"user","content":"Compare event-driven architecture with request-response architecture. Discuss patterns like event sourcing, CQRS, and saga. For each pattern, explain when to use it, its benefits, drawbacks, and provide a real-world example."}],"tags":["medium","routing","cold"]}
+{"id":"m08","tenant_id":"default","messages":[{"role":"user","content":"Explain how a distributed cache like Redis is used in production. Cover cache strategies (write-through, write-behind, cache-aside), eviction policies, cluster mode, sentinel for HA, and common pitfalls like cache stampede and thundering herd."}],"tags":["medium","routing","cold"]}
+{"id":"m09","tenant_id":"default","messages":[{"role":"user","content":"Describe how CI/CD pipelines work for a production web application. Cover source control triggers, build stages, unit and integration testing, container image creation, staging deployment, canary releases, and rollback procedures."}],"tags":["medium","routing","cold"]}
+{"id":"m10","tenant_id":"default","messages":[{"role":"user","content":"Explain the internals of a B-tree index in a relational database. How does it speed up queries? What happens during inserts that cause page splits? Compare with hash indexes and explain when each is appropriate. Include the impact on write performance."}],"tags":["medium","routing","cold"]}
+{"id":"m11","tenant_id":"default","messages":[{"role":"user","content":"Describe the architecture of a real-time notification system that handles millions of users. Cover WebSocket management, message fanout, presence tracking, offline message queuing, and delivery guarantees."}],"tags":["medium","routing","cold"]}
+{"id":"m12","tenant_id":"default","messages":[{"role":"user","content":"Explain how a search engine indexes and retrieves documents. Cover the crawling pipeline, inverted index construction, TF-IDF scoring, query parsing, and result ranking. Include how modern search engines use embeddings for semantic search."}],"tags":["medium","routing","cold"]}
+{"id":"m13","tenant_id":"default","messages":[{"role":"user","content":"Describe how rate limiting works at scale in an API gateway. Cover different algorithms (fixed window, sliding window, token bucket, leaky bucket), distributed rate limiting with Redis, per-tenant quotas, and graceful degradation strategies."}],"tags":["medium","routing","cold"]}
+{"id":"m14","tenant_id":"default","messages":[{"role":"user","content":"Explain the tradeoffs involved in choosing between a monolithic architecture and a microservices architecture. Cover organizational scaling, deployment complexity, data consistency, operational overhead, and provide guidance on when to migrate."}],"tags":["medium","routing","cold"]}
+{"id":"m15","tenant_id":"default","messages":[{"role":"user","content":"Describe how a modern observability stack works. Cover the three pillars (logs, metrics, traces), explain how OpenTelemetry collects data, how Prometheus scrapes metrics, how distributed tracing works with context propagation, and how alerting is configured."}],"tags":["medium","routing","cold"]}
+{"id":"l01","tenant_id":"default","messages":[{"role":"user","content":"Write a comprehensive technical design document for a multi-tenant LLM inference platform. The platform must support multiple backend models, implement intelligent request routing based on prompt characteristics, provide caching at multiple levels, handle rate limiting per tenant, and include a regression testing framework. Cover the system architecture, data models, API design, caching strategy, scheduling algorithm, and deployment plan. Include specific technology choices and justify each one. Discuss failure modes and how the system degrades gracefully under load. This should be detailed enough for an engineering team to implement. Cover at least 8 major components and their interactions."}],"tags":["long","routing","cold"]}
+{"id":"l02","tenant_id":"default","messages":[{"role":"user","content":"Write a detailed analysis of distributed consensus algorithms. Start with the FLP impossibility result and explain why it matters. Then cover Paxos (basic, multi-Paxos), Raft (leader election, log replication, safety), and practical BFT algorithms. For each algorithm, explain the protocol steps, message complexity, failure handling, and real-world implementations. Compare their performance characteristics under different failure scenarios. Discuss how modern distributed databases like CockroachDB and TiDB use these algorithms."}],"tags":["long","routing","cold"]}
+{"id":"l03","tenant_id":"default","messages":[{"role":"user","content":"Write a thorough guide on building production-grade ML inference pipelines. Cover model serving frameworks (TorchServe, Triton, vLLM), batching strategies (static vs dynamic batching, continuous batching), GPU memory management (KV cache, PagedAttention), quantization techniques (INT8, INT4, GPTQ, AWQ), model parallelism (tensor vs pipeline parallelism), and load balancing across GPU workers. Include benchmarking methodology, key metrics to track (TTFT, TPS, tokens per second per dollar), and how to set up A/B testing for model versions."}],"tags":["long","routing","cold"]}
+{"id":"l04","tenant_id":"default","messages":[{"role":"user","content":"Write a comprehensive comparison of vector database technologies for production semantic search. Cover the indexing algorithms (HNSW, IVF, PQ, and hybrid approaches), their memory/accuracy/speed tradeoffs, and how they scale. Compare at least 5 production vector databases (pgvector, Pinecone, Weaviate, Milvus, Qdrant) on dimensions including: query latency at different scales, indexing throughput, filtering capabilities, multi-tenancy support, operational complexity, and cost."}],"tags":["long","routing","cold"]}
+{"id":"l05","tenant_id":"default","messages":[{"role":"user","content":"Write a detailed post-mortem analysis template and fill it with a realistic example of a cascading failure in a distributed microservices system. The scenario: a configuration change to a caching layer causes increased database load, which triggers connection pool exhaustion, which causes timeouts in downstream services, which triggers retry storms, which causes a full system outage lasting 4 hours. For each phase of the incident, explain what happened, what monitoring signals were available, and what should have been done differently."}],"tags":["long","routing","cold"]}
+{"id":"ex01","tenant_id":"default","messages":[{"role":"user","content":"Explain what an API gateway does in 2 sentences."}],"tags":["exact","cache_exact"]}
+{"id":"ex02","tenant_id":"default","messages":[{"role":"user","content":"Define tail latency in one sentence."}],"tags":["exact","cache_exact"]}
+{"id":"ex03","tenant_id":"default","messages":[{"role":"user","content":"What is semantic caching? Give one risk."}],"tags":["exact","cache_exact"]}
+{"id":"ex04","tenant_id":"default","messages":[{"role":"user","content":"Explain rate limiting for a beginner in 3 sentences."}],"tags":["exact","cache_exact"]}
+{"id":"ex05","tenant_id":"default","messages":[{"role":"user","content":"List 3 tradeoffs of caching LLM outputs."}],"tags":["exact","cache_exact"]}
+{"id":"ex06","tenant_id":"default","messages":[{"role":"user","content":"What is a load balancer? One paragraph."}],"tags":["exact","cache_exact"]}
+{"id":"ex07","tenant_id":"default","messages":[{"role":"user","content":"Define TTFB and why it matters."}],"tags":["exact","cache_exact"]}
+{"id":"ex08","tenant_id":"default","messages":[{"role":"user","content":"What is backpressure in distributed systems?"}],"tags":["exact","cache_exact"]}
+{"id":"ex09","tenant_id":"default","messages":[{"role":"user","content":"Explain circuit breaker pattern in 2 sentences."}],"tags":["exact","cache_exact"]}
+{"id":"ex10","tenant_id":"default","messages":[{"role":"user","content":"What does idempotent mean in the context of APIs?"}],"tags":["exact","cache_exact"]}
+{"id":"ex11","tenant_id":"default","messages":[{"role":"user","content":"Define eventual consistency briefly."}],"tags":["exact","cache_exact"]}
+{"id":"ex12","tenant_id":"default","messages":[{"role":"user","content":"What is a token bucket algorithm?"}],"tags":["exact","cache_exact"]}
+{"id":"ex13","tenant_id":"default","messages":[{"role":"user","content":"Explain the CAP theorem in simple terms."}],"tags":["exact","cache_exact"]}
+{"id":"ex14","tenant_id":"default","messages":[{"role":"user","content":"What is a reverse proxy?"}],"tags":["exact","cache_exact"]}
+{"id":"ex15","tenant_id":"default","messages":[{"role":"user","content":"Define horizontal scaling vs vertical scaling."}],"tags":["exact","cache_exact"]}
+{"id":"sh-a01","tenant_id":"default","messages":[{"role":"user","content":"Explain what an API gateway does in 2 sentences."}],"tags":["sem_hit_warmup"]}
+{"id":"sh-b01","tenant_id":"default","messages":[{"role":"user","content":"In 2 sentences, what does an API gateway do?"}],"tags":["sem_hit","cache_semantic"]}
+{"id":"sh-a02","tenant_id":"default","messages":[{"role":"user","content":"What is tail latency? Define it in one sentence."}],"tags":["sem_hit_warmup"]}
+{"id":"sh-b02","tenant_id":"default","messages":[{"role":"user","content":"Define tail latency. One sentence only."}],"tags":["sem_hit","cache_semantic"]}
+{"id":"sh-a03","tenant_id":"default","messages":[{"role":"user","content":"What is a cache key? Give 2 examples."}],"tags":["sem_hit_warmup"]}
+{"id":"sh-b03","tenant_id":"default","messages":[{"role":"user","content":"Give 2 examples of cache keys and explain what they are."}],"tags":["sem_hit","cache_semantic"]}
+{"id":"sh-a04","tenant_id":"default","messages":[{"role":"user","content":"Explain admission control in distributed systems."}],"tags":["sem_hit_warmup"]}
+{"id":"sh-b04","tenant_id":"default","messages":[{"role":"user","content":"What is admission control in the context of distributed systems?"}],"tags":["sem_hit","cache_semantic"]}
+{"id":"sh-a05","tenant_id":"default","messages":[{"role":"user","content":"What are the benefits of connection pooling?"}],"tags":["sem_hit_warmup"]}
+{"id":"sh-b05","tenant_id":"default","messages":[{"role":"user","content":"Explain the advantages of using connection pooling."}],"tags":["sem_hit","cache_semantic"]}
+{"id":"sh-a06","tenant_id":"default","messages":[{"role":"user","content":"What is the difference between concurrency and parallelism?"}],"tags":["sem_hit_warmup"]}
+{"id":"sh-b06","tenant_id":"default","messages":[{"role":"user","content":"Explain concurrency vs parallelism and how they differ."}],"tags":["sem_hit","cache_semantic"]}
+{"id":"sh-a07","tenant_id":"default","messages":[{"role":"user","content":"How does consistent hashing work?"}],"tags":["sem_hit_warmup"]}
+{"id":"sh-b07","tenant_id":"default","messages":[{"role":"user","content":"Explain the consistent hashing algorithm and its purpose."}],"tags":["sem_hit","cache_semantic"]}
+{"id":"sh-a08","tenant_id":"default","messages":[{"role":"user","content":"What is a dead letter queue?"}],"tags":["sem_hit_warmup"]}
+{"id":"sh-b08","tenant_id":"default","messages":[{"role":"user","content":"Explain dead letter queues and when to use them."}],"tags":["sem_hit","cache_semantic"]}
+{"id":"sh-a09","tenant_id":"default","messages":[{"role":"user","content":"What is the bulkhead pattern in microservices?"}],"tags":["sem_hit_warmup"]}
+{"id":"sh-b09","tenant_id":"default","messages":[{"role":"user","content":"Explain the bulkhead pattern and its use in microservices architecture."}],"tags":["sem_hit","cache_semantic"]}
+{"id":"sh-a10","tenant_id":"default","messages":[{"role":"user","content":"How does a bloom filter work?"}],"tags":["sem_hit_warmup"]}
+{"id":"sh-b10","tenant_id":"default","messages":[{"role":"user","content":"Explain bloom filters and how they function."}],"tags":["sem_hit","cache_semantic"]}
+{"id":"sm-a01","tenant_id":"default","messages":[{"role":"user","content":"What is an API gateway?"}],"tags":["sem_miss_warmup"]}
+{"id":"sm-b01","tenant_id":"default","messages":[{"role":"user","content":"What are common security vulnerabilities when deploying an API gateway in production?"}],"tags":["sem_miss","cache_semantic"]}
+{"id":"sm-a02","tenant_id":"default","messages":[{"role":"user","content":"Define tail latency in one sentence."}],"tags":["sem_miss_warmup"]}
+{"id":"sm-b02","tenant_id":"default","messages":[{"role":"user","content":"What strategies do engineers use to reduce P99 latency in high-throughput trading systems?"}],"tags":["sem_miss","cache_semantic"]}
+{"id":"sm-a03","tenant_id":"default","messages":[{"role":"user","content":"Explain caching in distributed systems."}],"tags":["sem_miss_warmup"]}
+{"id":"sm-b03","tenant_id":"default","messages":[{"role":"user","content":"How do you debug a thundering herd problem after a cache node restart?"}],"tags":["sem_miss","cache_semantic"]}
+{"id":"sm-a04","tenant_id":"default","messages":[{"role":"user","content":"What is database sharding?"}],"tags":["sem_miss_warmup"]}
+{"id":"sm-b04","tenant_id":"default","messages":[{"role":"user","content":"Compare the operational complexity of hash-based sharding vs range-based sharding for a time-series workload."}],"tags":["sem_miss","cache_semantic"]}
+{"id":"sm-a05","tenant_id":"default","messages":[{"role":"user","content":"Explain load balancing briefly."}],"tags":["sem_miss_warmup"]}
+{"id":"sm-b05","tenant_id":"default","messages":[{"role":"user","content":"How would you design a load balancer that accounts for backend server health, active connection count, and geographic proximity?"}],"tags":["sem_miss","cache_semantic"]}
+{"id":"sm-a06","tenant_id":"default","messages":[{"role":"user","content":"What is a message queue?"}],"tags":["sem_miss_warmup"]}
+{"id":"sm-b06","tenant_id":"default","messages":[{"role":"user","content":"Walk through how you would implement exactly-once delivery semantics on top of Apache Kafka."}],"tags":["sem_miss","cache_semantic"]}
+{"id":"sm-a07","tenant_id":"default","messages":[{"role":"user","content":"Define rate limiting."}],"tags":["sem_miss_warmup"]}
+{"id":"sm-b07","tenant_id":"default","messages":[{"role":"user","content":"How do you implement distributed rate limiting across 50 API gateway instances without a single point of failure?"}],"tags":["sem_miss","cache_semantic"]}
+{"id":"sm-a08","tenant_id":"default","messages":[{"role":"user","content":"Explain the circuit breaker pattern."}],"tags":["sem_miss_warmup"]}
+{"id":"sm-b08","tenant_id":"default","messages":[{"role":"user","content":"How should you tune circuit breaker thresholds differently for a payment service vs a recommendation service?"}],"tags":["sem_miss","cache_semantic"]}
+{"id":"sm-a09","tenant_id":"default","messages":[{"role":"user","content":"What is container orchestration?"}],"tags":["sem_miss_warmup"]}
+{"id":"sm-b09","tenant_id":"default","messages":[{"role":"user","content":"Describe how Kubernetes handles pod disruption budgets during a rolling update across multiple availability zones."}],"tags":["sem_miss","cache_semantic"]}
+{"id":"sm-a10","tenant_id":"default","messages":[{"role":"user","content":"What is observability?"}],"tags":["sem_miss_warmup"]}
+{"id":"sm-b10","tenant_id":"default","messages":[{"role":"user","content":"How do you correlate distributed traces with log entries when debugging a latency spike across 12 microservices?"}],"tags":["sem_miss","cache_semantic"]}
+{"id":"b01","tenant_id":"default","messages":[{"role":"user","content":"What is a Raft leader election?"}],"tags":["short","burst"]}
+{"id":"b02","tenant_id":"default","messages":[{"role":"user","content":"Define TCP congestion window."}],"tags":["short","burst"]}
+{"id":"b03","tenant_id":"default","messages":[{"role":"user","content":"What is MVCC in databases?"}],"tags":["short","burst"]}
+{"id":"b04","tenant_id":"default","messages":[{"role":"user","content":"Explain skip lists briefly."}],"tags":["short","burst"]}
+{"id":"b05","tenant_id":"default","messages":[{"role":"user","content":"What is an LSM tree?"}],"tags":["short","burst"]}
+{"id":"b06","tenant_id":"default","messages":[{"role":"user","content":"Define gossip protocol in one sentence."}],"tags":["short","burst"]}
+{"id":"b07","tenant_id":"default","messages":[{"role":"user","content":"What are vector clocks?"}],"tags":["short","burst"]}
+{"id":"b08","tenant_id":"default","messages":[{"role":"user","content":"Explain CRDTs briefly."}],"tags":["short","burst"]}
+{"id":"b09","tenant_id":"default","messages":[{"role":"user","content":"What is io_uring?"}],"tags":["short","burst"]}
+{"id":"b10","tenant_id":"default","messages":[{"role":"user","content":"Define epoll vs kqueue."}],"tags":["short","burst"]}
+{"id":"b11","tenant_id":"default","messages":[{"role":"user","content":"What is memory-mapped I/O?"}],"tags":["short","burst"]}
+{"id":"b12","tenant_id":"default","messages":[{"role":"user","content":"Explain thread pool sizing."}],"tags":["short","burst"]}
+{"id":"b13","tenant_id":"default","messages":[{"role":"user","content":"What is lock-free programming?"}],"tags":["short","burst"]}
+{"id":"b14","tenant_id":"default","messages":[{"role":"user","content":"Define TLS handshake in simple terms."}],"tags":["short","burst"]}
+{"id":"b15","tenant_id":"default","messages":[{"role":"user","content":"What is HTTP/2 multiplexing?"}],"tags":["short","burst"]}
+{"id":"b16","tenant_id":"default","messages":[{"role":"user","content":"Explain service discovery briefly."}],"tags":["short","burst"]}
+{"id":"b17","tenant_id":"default","messages":[{"role":"user","content":"What is leader election in distributed systems?"}],"tags":["short","burst"]}
+{"id":"b18","tenant_id":"default","messages":[{"role":"user","content":"Define split-brain problem."}],"tags":["short","burst"]}
+{"id":"b19","tenant_id":"default","messages":[{"role":"user","content":"What is cache invalidation?"}],"tags":["short","burst"]}
+{"id":"b20","tenant_id":"default","messages":[{"role":"user","content":"Explain read-repair in Cassandra."}],"tags":["short","burst"]}
