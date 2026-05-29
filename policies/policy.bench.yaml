@@ -1,4 +1,4 @@
-policy_version: "bench-1"
+policy_version: "bench-2"
 
 tenants:
   default:
@@ -7,9 +7,18 @@ tenants:
       exact_enabled: true
       semantic:
         enabled: true
-        threshold: 0.85       # tuned: catches genuine rephrasings, rejects unrelated
+        threshold: 0.72
         ttl_seconds: 3600
         verifier: "off"
+    token_budget:
+      limit: 500000
+      window_seconds: 3600
+      hard_reject: true
+    slo:
+      p50_ms: 5000
+      p95_ms: 15000
+      p99_ms: 30000
+      error_rate_max_pct: 2.0
 
   premium:
     latency_slo_ms: 3000
@@ -17,9 +26,18 @@ tenants:
       exact_enabled: true
       semantic:
         enabled: true
-        threshold: 0.92       # stricter for premium — fewer false positives
+        threshold: 0.92
         ttl_seconds: 1800
         verifier: "off"
+    token_budget:
+      limit: 2000000
+      window_seconds: 3600
+      hard_reject: false
+    slo:
+      p50_ms: 3000
+      p95_ms: 10000
+      p99_ms: 20000
+      error_rate_max_pct: 1.0
 
 routing:
   length_buckets:
@@ -46,7 +64,7 @@ plans:
 
 scheduler:
   short_max_prompt_chars: 1200
-  workers: 4                       # bumped for benchmark throughput
+  workers: 8
   max_queue_depth_per_lane: 100
   admission:
     enabled: true
@@ -60,3 +78,48 @@ scheduler:
     reject:
       enabled: true
       retry_after_seconds: 2
+
+# ── Feature 1: Multi-Signal Cost Router ─────────────────────────────────────
+cost_router:
+  classifier_weights:
+    structural: 0.35
+    semantic: 0.40
+    intent: 0.25
+  tiers:
+    simple:
+      complexity_max: 0.15
+      model: "llama3.2:1b"
+      max_tokens: 256
+      cost_per_1k_tokens: 0.0002
+    medium:
+      complexity_max: 0.55
+      model: "llama3.2:1b"
+      max_tokens: 512
+      cost_per_1k_tokens: 0.0002
+    complex:
+      complexity_max: 1.0
+      model: "llama3.1:8b"
+      max_tokens: 1024
+      cost_per_1k_tokens: 0.0008
+  tool_flag_overrides:
+    needs_computation: "medium"
+    needs_code: "complex"
+    needs_personal_context: "medium"
+    is_multi_hop: "medium"
+  escalation:
+    enabled: false
+    min_response_length_ratio: 0.3
+    hedge_phrases:
+      - "I'm not sure"
+      - "I don't know"
+      - "I cannot answer"
+      - "I don't have enough information"
+      - "As an AI"
+    escalation_cost_multiplier: 1.5
+
+# ── Feature 2: Circuit Breaker ───────────────────────────────────────────────
+circuit_breaker:
+  failure_threshold: 5
+  success_threshold: 2
+  recovery_timeout_seconds: 30
+  timeout_counts_as_failure: true

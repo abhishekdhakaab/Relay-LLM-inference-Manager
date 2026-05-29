@@ -1,4 +1,4 @@
-policy_version: "demo-1"
+policy_version: "demo-2"
 
 tenants:
   default:
@@ -10,6 +10,15 @@ tenants:
         threshold: 0.88
         ttl_seconds: 3600
         verifier: "off"
+    token_budget:
+      limit: 200000
+      window_seconds: 3600
+      hard_reject: false
+    slo:
+      p50_ms: 8000
+      p95_ms: 20000
+      p99_ms: 40000
+      error_rate_max_pct: 3.0
 
 routing:
   length_buckets:
@@ -50,3 +59,48 @@ scheduler:
     reject:
       enabled: true
       retry_after_seconds: 2
+
+# ── Feature 1: Multi-Signal Cost Router ─────────────────────────────────────
+cost_router:
+  classifier_weights:
+    structural: 0.35
+    semantic: 0.40
+    intent: 0.25
+  tiers:
+    simple:
+      complexity_max: 0.35
+      model: "llama3.2:1b"
+      max_tokens: 200
+      cost_per_1k_tokens: 0.0002
+    medium:
+      complexity_max: 0.65
+      model: "llama3.2:1b"
+      max_tokens: 450
+      cost_per_1k_tokens: 0.0002
+    complex:
+      complexity_max: 1.0
+      model: "llama3.1:8b"
+      max_tokens: 650
+      cost_per_1k_tokens: 0.0008
+  tool_flag_overrides:
+    needs_computation: "medium"
+    needs_code: "complex"
+    needs_personal_context: "medium"
+    is_multi_hop: "medium"
+  escalation:
+    enabled: true
+    min_response_length_ratio: 0.3
+    hedge_phrases:
+      - "I'm not sure"
+      - "I don't know"
+      - "I cannot answer"
+      - "I don't have enough information"
+      - "As an AI"
+    escalation_cost_multiplier: 1.5
+
+# ── Feature 2: Circuit Breaker ───────────────────────────────────────────────
+circuit_breaker:
+  failure_threshold: 5
+  success_threshold: 2
+  recovery_timeout_seconds: 30
+  timeout_counts_as_failure: true

@@ -1,8 +1,19 @@
 .env
 __pycache__/
 *.pyc
+*.pyo
 .venv/
 dist/
 build/
 eval/*.json
 .DS_Store
+
+# Private / generated docs
+.claude/
+*.docx
+CLAUDE_CODE_PROMPT.md
+NEW_updates.md
+UPDATED_FEATURE.md
+
+# Relay runtime
+/tmp/relay_*.log

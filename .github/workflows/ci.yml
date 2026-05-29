@@ -63,6 +63,10 @@ jobs:
       - name: Init DB schema
         run: |
           psql "postgresql://relay:relay@localhost:5432/relay" -f infra/postgres-init/001_init.sql
+          psql "postgresql://relay:relay@localhost:5432/relay" -f infra/postgres-init/002_cost_router.sql
+          psql "postgresql://relay:relay@localhost:5432/relay" -f infra/postgres-init/003_prototypes.sql
+          psql "postgresql://relay:relay@localhost:5432/relay" -f infra/postgres-init/004_auth.sql
+          psql "postgresql://relay:relay@localhost:5432/relay" -f infra/postgres-init/005_users.sql
 
       - name: Run unit tests
         run: |

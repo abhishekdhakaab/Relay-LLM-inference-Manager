@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import yaml
 from pydantic import BaseModel, Field
@@ -54,16 +54,79 @@ class SchedulerConfig(BaseModel):
     admission: SchedulerAdmission = Field(default_factory = SchedulerAdmission)
 
 
+# ── Feature 1: Cost Router ────────────────────────────────────────────────────
+
+class ClassifierWeights(BaseModel):
+    structural: float = 0.35
+    semantic: float = 0.40
+    intent: float = 0.25
+
+class TierConfig(BaseModel):
+    complexity_max: float
+    model: str
+    max_tokens: int
+    cost_per_1k_tokens: float
+
+class ToolFlagOverrides(BaseModel):
+    needs_computation: str = "medium"
+    needs_code: str = "complex"
+    needs_personal_context: str = "medium"
+    is_multi_hop: str = "medium"
+
+class EscalationConfig(BaseModel):
+    enabled: bool = True
+    min_response_length_ratio: float = 0.3
+    hedge_phrases: list[str] = Field(default_factory=lambda: [
+        "I'm not sure", "I don't know", "I cannot answer",
+        "I don't have enough information", "As an AI",
+    ])
+    escalation_cost_multiplier: float = 1.5
+
+class CostRouterConfig(BaseModel):
+    classifier_weights: ClassifierWeights = Field(default_factory=ClassifierWeights)
+    tiers: dict[str, TierConfig] = Field(default_factory=dict)
+    tool_flag_overrides: ToolFlagOverrides = Field(default_factory=ToolFlagOverrides)
+    escalation: EscalationConfig = Field(default_factory=EscalationConfig)
+
+# ── Feature 2: Circuit Breaker ───────────────────────────────────────────────
+
+class CircuitBreakerConfig(BaseModel):
+    failure_threshold: int = 5
+    success_threshold: int = 2
+    recovery_timeout_seconds: int = 30
+    timeout_counts_as_failure: bool = True
+
+# ── Feature 4: Token Budget ──────────────────────────────────────────────────
+
+class TokenBudgetConfig(BaseModel):
+    limit: int = 500000
+    window_seconds: int = 3600
+    hard_reject: bool = True
+
+# ── Feature 5: SLO ───────────────────────────────────────────────────────────
+
+class SLOConfig(BaseModel):
+    p50_ms: int = 12000
+    p95_ms: int = 45000
+    p99_ms: int = 60000
+    error_rate_max_pct: float = 1.0
+
+# ── Tenant policy (extended) ──────────────────────────────────────────────────
+
 class TenantPolicy(BaseModel):
     latency_slo_ms: int = 8000
     caching: TenantCaching = Field(default_factory=TenantCaching)
+    token_budget: Optional[TokenBudgetConfig] = None
+    slo: SLOConfig = Field(default_factory=SLOConfig)
 
 class PolicyConfig(BaseModel):
     policy_version: str
     tenants: dict[str, TenantPolicy]
     routing: dict[str, Any]
     plans: dict[str, Any]
-    scheduler : SchedulerConfig = Field(default_factory = SchedulerConfig)
+    scheduler: SchedulerConfig = Field(default_factory=SchedulerConfig)
+    cost_router: CostRouterConfig = Field(default_factory=CostRouterConfig)
+    circuit_breaker: CircuitBreakerConfig = Field(default_factory=CircuitBreakerConfig)
 # -------------------------
 # Settings
 # -------------------------

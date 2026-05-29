@@ -14,13 +14,18 @@ pydantic = "^2.8.0"
 pydantic-settings = "^2.4.0"
 pyyaml = "^6.0.2"
 structlog = "^24.2.0"
-asyncpg = "^0.29.0"
+asyncpg = ">=0.31.0"
 sqlalchemy = "^2.0.32"
 redis = "^5.0.8"
 orjson = "^3.10.7"
 greenlet = "^3.3.0"
 httpx = "^0.28.1"
 fastembed = { version = "^0.3.6", python = ">=3.8,<3.13" }
+opentelemetry-sdk = ">=1.24.0"
+opentelemetry-exporter-otlp-proto-grpc = ">=1.24.0"
+opentelemetry-instrumentation-fastapi = ">=0.45b0"
+opentelemetry-instrumentation-httpx = ">=0.45b0"
+numpy = ">=1.26.0"
 
 
 [tool.poetry.group.dev.dependencies]

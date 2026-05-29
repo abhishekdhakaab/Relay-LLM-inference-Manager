@@ -63,6 +63,7 @@ def main() -> None:
     ap.add_argument("--out", default="eval/out.json")
     ap.add_argument("--policy-label", default="candidate")
     ap.add_argument("--baseline-out", default="", help="If provided, compute quality similarity vs baseline outputs.")
+    ap.add_argument("--api-key", default="relay-dev-default-key-1234")
     args = ap.parse_args()
 
     gold_path = Path(args.gold)
@@ -90,7 +91,11 @@ def main() -> None:
             t0 = time.perf_counter()
             resp = client.post(
                 f"{args.host}/v1/chat/completions",
-                headers={"Content-Type": "application/json", "X-Tenant-Id": tenant_id},
+                headers={
+                    "Content-Type": "application/json",
+                    "X-Tenant-Id": tenant_id,
+                    "Authorization": f"Bearer {args.api_key}",
+                },
                 content=orjson.dumps(payload),
             )
             dt = (time.perf_counter() - t0) * 1000.0

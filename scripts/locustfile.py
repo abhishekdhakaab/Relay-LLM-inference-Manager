@@ -42,7 +42,11 @@ class RelayUser(HttpUser):
         self.client.post(
             "/v1/chat/completions",
             data=json.dumps(payload),
-            headers={"Content-Type": "application/json", "X-Tenant-Id": TENANT},
+            headers={
+                "Content-Type": "application/json",
+                "X-Tenant-Id": TENANT,
+                "Authorization": "Bearer relay-dev-default-key-1234",
+            },
             name="/v1/chat/completions",
             timeout=120,
         )

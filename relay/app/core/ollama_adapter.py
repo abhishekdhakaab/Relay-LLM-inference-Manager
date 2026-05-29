@@ -6,6 +6,20 @@ from dataclasses import dataclass
 import httpx
 
 from app.core.backend import GenerationResult
+from app.core.circuit_breaker import CircuitBreaker, CircuitOpenError
+from app.core.settings import settings
+
+# Module-level singleton — shared across all requests in the same process.
+# Initialised lazily on first adapter use so startup order doesn't matter.
+_circuit_breaker: CircuitBreaker | None = None
+
+
+def get_circuit_breaker() -> CircuitBreaker:
+    global _circuit_breaker
+    if _circuit_breaker is None:
+        policy = settings.load_policy()
+        _circuit_breaker = CircuitBreaker(policy.circuit_breaker)
+    return _circuit_breaker
 
 
 @dataclass(frozen=True)
@@ -14,6 +28,38 @@ class OllamaAdapter:
     name: str = "ollama"
 
     async def generate(
+        self,
+        *,
+        model: str,
+        prompt: str,
+        temperature: float,
+        max_tokens: int,
+    ) -> GenerationResult:
+        cb = get_circuit_breaker()
+
+        # Will raise CircuitOpenError immediately if circuit is OPEN
+        await cb.before_call()
+
+        t0 = time.perf_counter()
+        try:
+            result = await self._do_generate(
+                model=model,
+                prompt=prompt,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+        except (httpx.TimeoutException, httpx.HTTPStatusError) as exc:
+            await cb.on_failure()
+            raise
+        except Exception:
+            # Non-network errors (e.g., JSON parse) — still counts as failure
+            await cb.on_failure()
+            raise
+
+        await cb.on_success()
+        return result
+
+    async def _do_generate(
         self,
         *,
         model: str,
@@ -39,7 +85,6 @@ class OllamaAdapter:
             data = r.json()
 
         latency_ms = int((time.perf_counter() - t0) * 1000)
-
         text = (data.get("response") or "").strip()
 
         prompt_tokens = data.get("prompt_eval_count")

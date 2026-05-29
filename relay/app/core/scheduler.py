@@ -7,6 +7,7 @@ from typing import Awaitable, Callable, Dict, Optional
 
 from app.core.policy_engine import ExecutionPlan
 from app.core.settings import PolicyConfig
+from app.db.redis_client import get_redis
 
 
 @dataclass
@@ -36,6 +37,7 @@ class Scheduler:
     Two-lane (short/long) fair scheduler with basic admission control.
     - Per-lane: per-tenant FIFO deques (implemented as asyncio Queues per tenant)
     - Fairness: round-robin across tenants that have queued work
+    - Queue depth tracked in Redis for cross-process admission control
     """
 
     def __init__(self, policy: PolicyConfig):
@@ -70,6 +72,38 @@ class Scheduler:
     def lane_for_prompt_chars(self, prompt_chars: int) -> str:
         return "short" if prompt_chars <= int(self.policy.scheduler.short_max_prompt_chars) else "long"
 
+    async def _incr_depth(self, lane: str) -> None:
+        """Increment the shared Redis depth counter for this lane."""
+        try:
+            redis = get_redis()
+            await redis.incr(f"scheduler:depth:{lane}")
+        except Exception:
+            pass  # Redis unavailable — degrade gracefully; in-process depth still used
+
+    async def _decr_depth(self, lane: str) -> None:
+        """Decrement the shared Redis depth counter for this lane."""
+        try:
+            redis = get_redis()
+            key = f"scheduler:depth:{lane}"
+            new = await redis.decr(key)
+            if new < 0:
+                await redis.set(key, 0)  # guard against drift
+        except Exception:
+            pass
+
+    async def _get_redis_depth(self, lane: str) -> int:
+        """Read total depth from Redis; fall back to in-process depth on error."""
+        try:
+            redis = get_redis()
+            val = await redis.get(f"scheduler:depth:{lane}")
+            return int(val) if val is not None else self._local_depth(lane)
+        except Exception:
+            return self._local_depth(lane)
+
+    def _local_depth(self, lane: str) -> int:
+        tmap = self._queues.get(lane, {})
+        return sum(q.qsize() for q in tmap.values())
+
     async def submit(self, job: ScheduledJob) -> None:
         async with self._lock:
             lane = job.lane
@@ -87,6 +121,7 @@ class Scheduler:
                 raise QueueFullError(f"{lane} queue full")
 
             await tmap[tenant].put(job)
+            await self._incr_depth(lane)
 
     async def _worker_loop(self, worker_id: int) -> None:
         # naive strategy: prefer short lane, then long
@@ -98,6 +133,8 @@ class Scheduler:
 
             if job.fut.cancelled():
                 continue
+
+            await self._decr_depth(job.lane)
 
             try:
                 res = await job.run()
@@ -135,7 +172,7 @@ class Scheduler:
 
         return None
 
-    def admission_check(
+    async def admission_check(
         self,
         *,
         lane: str,
@@ -150,18 +187,10 @@ class Scheduler:
         workers = max(1, int(self.policy.scheduler.workers))
         avg_compute = adm.default_compute_ms.short if lane == "short" else adm.default_compute_ms.long
 
-        # Approximate queue depth in this lane
-        tmap = self._queues[lane]
-        depth = sum(q.qsize() for q in tmap.values())
+        depth = await self._get_redis_depth(lane)
         predicted_wait_ms = int((depth * avg_compute) / workers)
 
-        ## now to decide if we should admit this question: two factor
-        ## 1.average compute = hardcoded based on the size of the prompt ( short or long)
-        ## 2. predicted_wait_ms = (total number of all the requests in that particular lane * avg computer)/number of workers
         predicted_total_ms = predicted_wait_ms + avg_compute
-
-
-
 
         if predicted_total_ms <= tenant_slo_ms:
             return AdmissionResult(True, False, False, "within_slo"), predicted_wait_ms
