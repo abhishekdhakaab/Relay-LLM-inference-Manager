@@ -1,32 +1,32 @@
 #!/usr/bin/env bash
 # LLM Relay — GPU Cluster Single Entrypoint
 #
-# Full pipeline from fresh clone to finished benchmark report:
-#   1. Validate environment (python3, poetry, ollama)
-#   2. Install Python dependencies
-#   3. Start infrastructure (Docker Compose or native services)
-#   4. Apply all DB migrations (idempotent — safe to re-run)
-#   5. Run pytest test suite (79 tests, no running relay needed)
-#   6. Start relay server
-#   7. Run smoke test (12 checks — aborts pipeline on failure)
-#   8. Run full benchmark (phases 6-11) and write JSON report
+# Auto-installs ALL missing prerequisites then runs the full pipeline:
+#   1. Install missing tools  (poetry, ollama, redis, postgresql+pgvector)
+#   2. GPU detection + Ollama (pins to free GPUs, starts daemon, pulls models)
+#   3. Python dependencies    (poetry install)
+#   4. Start services         (Redis + PostgreSQL)
+#   5. DB migrations          (idempotent — safe to re-run)
+#   6. Pytest suite           (79 tests)
+#   7. Start relay server
+#   8. Smoke test             (12 checks)
+#   9. Full benchmark         (phases 6-11, writes JSON report)
 #
 # Usage:
 #   bash scripts/run_gpu.sh                    # full pipeline
-#   bash scripts/run_gpu.sh --smoke-only       # steps 1-7 only, no benchmark
-#   bash scripts/run_gpu.sh --bench-only       # skip smoke test (step 7), do step 8
-#   bash scripts/run_gpu.sh --skip-tests       # skip pytest (step 5), useful for re-runs
-#   bash scripts/run_gpu.sh --skip-slo-wait    # skip the 90s SLO loop wait in benchmark
+#   bash scripts/run_gpu.sh --smoke-only       # steps 1-8 only, no benchmark
+#   bash scripts/run_gpu.sh --bench-only       # skip smoke test, run benchmark
+#   bash scripts/run_gpu.sh --skip-tests       # skip pytest (step 6)
+#   bash scripts/run_gpu.sh --skip-slo-wait    # skip 90s SLO wait in benchmark
 #
 # Before running:
-#   cp .env.example .env   # then edit with your cluster values
+#   cp .env.example .env   # edit with your cluster values
 #
-# Prerequisites (not managed by this script — must already be running):
-#   • PostgreSQL accessible at DATABASE_URL
-#   • Redis accessible at REDIS_URL
-#   • Ollama running with GPU and models loaded: llama3.2:1b  llama3.1:8b
-#   • psql CLI installed  (for migrations)
-#   • poetry installed    (pip install poetry)
+# Auto-install support matrix:
+#   sudo + apt-get   → Ubuntu / Debian (most GPU clusters)
+#   sudo + yum/dnf   → RHEL / CentOS / Rocky
+#   conda / mamba    → Anaconda/Miniconda (common on research clusters)
+#   No sudo + no conda → Redis built from source; Postgres must be pre-installed
 
 set -euo pipefail
 
@@ -65,7 +65,7 @@ set -o allexport
 source "${ENV_FILE}"
 set +o allexport
 
-# Derived config
+# Derived config (set defaults before .env overrides DATABASE_URL below)
 HOST="http://localhost:${RELAY_PORT:-8000}"
 API_KEY="${DEV_KEY_DEFAULT:-relay-dev-default-key-1234}"
 ADMIN_KEY="${DEV_KEY_ADMIN:-relay-dev-admin-key-9999}"
@@ -73,93 +73,303 @@ GOLD="${ROOT}/eval/gold_150.jsonl"
 COST_GOLD="${ROOT}/eval/cost_router_gold.jsonl"
 BENCH_OUT="${ROOT}/eval/benchmark_gpu_$(date +%Y%m%d_%H%M%S).json"
 RELAY_LOG="${ROOT}/relay_gpu.log"
-
-# psql-compatible URL: strip the +asyncpg SQLAlchemy driver tag
 DB_URL_PSQL="${DATABASE_URL//+asyncpg/}"
 
 echo "╔══════════════════════════════════════════════════════╗"
 echo "║          LLM Relay — GPU Cluster Run                 ║"
 echo "╚══════════════════════════════════════════════════════╝"
-echo "  Root      : ${ROOT}"
-echo "  Policy    : ${POLICY_PATH:-policies/policy.bench.yaml}"
-echo "  Backend   : ${BACKEND_MODE:-ollama}"
-echo "  Host      : ${HOST}"
-echo "  Report    : ${BENCH_OUT}"
+echo "  Root   : ${ROOT}"
+echo "  Policy : ${POLICY_PATH:-policies/policy.bench.yaml}"
+echo "  Backend: ${BACKEND_MODE:-ollama}"
+echo "  Host   : ${HOST}"
+echo "  Report : ${BENCH_OUT}"
 echo ""
 
-# ── [1/8] Validate environment ────────────────────────────────────────────────
-echo "── [1/8] Validating environment ──"
+# ── Detect available package managers ─────────────────────────────────────────
+# Extend PATH so user-local binaries (poetry, ollama) are found
+export PATH="${HOME}/.local/bin:${PATH}"
 
-command -v python3 &>/dev/null || { echo "ERROR: python3 not found"; exit 1; }
-command -v poetry  &>/dev/null || { echo "ERROR: poetry not found. Install: pip install poetry"; exit 1; }
+HAS_SUDO=0
+sudo -n true 2>/dev/null && HAS_SUDO=1
 
-if [ "${BACKEND_MODE:-ollama}" = "ollama" ]; then
-  OLLAMA_URL="${OLLAMA_BASE_URL:-http://localhost:11434}"
-  echo "  Checking Ollama at ${OLLAMA_URL}..."
-  if ! curl -sf "${OLLAMA_URL}/api/tags" &>/dev/null; then
-    echo "ERROR: Ollama not reachable at ${OLLAMA_URL}"
-    echo "       Start Ollama with GPU support and load models:"
-    echo "         ollama pull llama3.2:1b && ollama pull llama3.1:8b"
+PKG_MGR=""
+if   [ "${HAS_SUDO}" -eq 1 ] && command -v apt-get &>/dev/null; then PKG_MGR="apt"
+elif [ "${HAS_SUDO}" -eq 1 ] && command -v dnf     &>/dev/null; then PKG_MGR="dnf"
+elif [ "${HAS_SUDO}" -eq 1 ] && command -v yum     &>/dev/null; then PKG_MGR="yum"
+fi
+
+CONDA_CMD=""
+command -v mamba &>/dev/null && CONDA_CMD="mamba"
+{ command -v conda &>/dev/null && [ -z "${CONDA_CMD}" ]; } && CONDA_CMD="conda"
+
+# Whether Postgres was freshly installed this run (needs initdb on conda path)
+PG_FRESH_INSTALL=0
+# How we'll connect to postgres for migrations
+PG_MANAGED=0   # 1 = we started postgres ourselves (conda/manual), 0 = system service
+
+# ── Helper functions ───────────────────────────────────────────────────────────
+
+install_pgvector_apt() {
+  # Try versioned packages; fall back to building from source
+  local pg_ver
+  pg_ver=$(psql --version 2>/dev/null | grep -oP '\d+' | head -1)
+  sudo apt-get install -y -q "postgresql-${pg_ver}-pgvector" 2>/dev/null && return 0
+
+  echo "  pgvector apt package not found — building from source..."
+  sudo apt-get install -y -q build-essential postgresql-server-dev-all git 2>/dev/null
+  local tmpdir
+  tmpdir=$(mktemp -d)
+  git clone --quiet --depth 1 https://github.com/pgvector/pgvector.git "${tmpdir}/pgvector"
+  cd "${tmpdir}/pgvector" && make -j"$(nproc)" 2>/dev/null && sudo make install
+  cd "${ROOT}"
+  rm -rf "${tmpdir}"
+}
+
+install_redis_source() {
+  # Build Redis from source — requires only make and a C compiler.
+  echo "  Building Redis from source (no-sudo fallback)..."
+  local build_dir="${HOME}/.local/build/redis"
+  mkdir -p "${HOME}/.local/bin" "${build_dir}"
+  curl -fsSL https://download.redis.io/redis-stable.tar.gz \
+    | tar -xz -C "${build_dir}" --strip-components=1
+  make -C "${build_dir}" -j"$(nproc)" 2>&1 | tail -2
+  cp "${build_dir}/src/redis-server" "${build_dir}/src/redis-cli" "${HOME}/.local/bin/"
+  echo "  Redis built → ${HOME}/.local/bin/redis-server"
+}
+
+start_redis_native() {
+  if redis-cli ping &>/dev/null 2>&1; then
+    echo "  Redis: already running"
+    return
+  fi
+  echo "  Starting Redis..."
+  redis-server --daemonize yes \
+    --loglevel warning \
+    --logfile "${ROOT}/redis_gpu.log" \
+    --dir /tmp
+  sleep 1
+  redis-cli ping &>/dev/null \
+    && echo "  Redis: started OK" \
+    || { echo "ERROR: Redis failed to start — check ${ROOT}/redis_gpu.log"; exit 1; }
+}
+
+start_postgres_system() {
+  # Used when postgres was installed via apt/yum — it has a system service
+  if pg_isready -q 2>/dev/null; then
+    echo "  PostgreSQL: already running"
+  else
+    echo "  Starting PostgreSQL (system service)..."
+    sudo systemctl start postgresql 2>/dev/null \
+      || sudo service postgresql start 2>/dev/null \
+      || { echo "ERROR: could not start postgresql service"; exit 1; }
+    for i in $(seq 1 20); do
+      pg_isready -q 2>/dev/null && { echo "  PostgreSQL: ready (${i}s)"; break; }
+      sleep 1
+    done
+    pg_isready -q || { echo "ERROR: PostgreSQL did not start in 20s"; exit 1; }
+  fi
+  # Create relay user + database under the postgres superuser (idempotent)
+  sudo -u postgres psql -c "CREATE USER relay WITH SUPERUSER;" 2>/dev/null || true
+  sudo -u postgres psql -c "CREATE DATABASE relay OWNER relay;" 2>/dev/null || true
+  DB_URL_PSQL="postgresql://relay@localhost/relay"
+  export DATABASE_URL="postgresql+asyncpg://relay@localhost/relay"
+}
+
+start_postgres_managed() {
+  # Used when postgres was installed via conda — we run pg_ctl ourselves
+  local pgdata="${HOME}/.local/share/relay-pgdata"
+  local pg_log="${ROOT}/postgres_gpu.log"
+
+  if pg_isready -q 2>/dev/null; then
+    echo "  PostgreSQL: already running"
+  else
+    if [ ! -d "${pgdata}/global" ]; then
+      echo "  Initialising PostgreSQL data directory..."
+      initdb -D "${pgdata}" -U relay --auth=trust --no-instructions 2>/dev/null
+    fi
+    echo "  Starting PostgreSQL..."
+    pg_ctl -D "${pgdata}" -l "${pg_log}" start
+    for i in $(seq 1 20); do
+      pg_isready -q 2>/dev/null && { echo "  PostgreSQL: ready (${i}s)"; break; }
+      sleep 1
+    done
+    pg_isready -q || { echo "ERROR: PostgreSQL did not start — check ${pg_log}"; exit 1; }
+  fi
+  # Create database (idempotent)
+  createdb -U relay relay 2>/dev/null || true
+  DB_URL_PSQL="postgresql://relay@localhost:5432/relay"
+  export DATABASE_URL="postgresql+asyncpg://relay@localhost:5432/relay"
+}
+
+# ── [1/9] Install prerequisites ───────────────────────────────────────────────
+echo "── [1/9] Installing prerequisites ──"
+
+# ── poetry ─────────────────────────────────────────────────────────────────────
+if ! command -v poetry &>/dev/null; then
+  echo "  Installing poetry..."
+  pip install --user -q poetry
+  hash -r 2>/dev/null || true
+fi
+echo "  poetry  : $(poetry --version 2>/dev/null)"
+
+# ── Ollama ─────────────────────────────────────────────────────────────────────
+if ! command -v ollama &>/dev/null; then
+  echo "  Installing Ollama..."
+  curl -fsSL https://ollama.com/install.sh | sh
+  hash -r 2>/dev/null || true
+fi
+echo "  ollama  : OK ($(ollama --version 2>/dev/null | head -1))"
+
+# ── Redis ──────────────────────────────────────────────────────────────────────
+if ! command -v redis-server &>/dev/null; then
+  echo "  Installing Redis..."
+  if   [ "${PKG_MGR}" = "apt" ]; then sudo apt-get install -y -q redis-server
+  elif [ "${PKG_MGR}" = "dnf" ]; then sudo dnf install -y -q redis
+  elif [ "${PKG_MGR}" = "yum" ]; then sudo yum install -y -q redis
+  elif [ -n "${CONDA_CMD}" ];    then "${CONDA_CMD}" install -y -q -c conda-forge redis
+  else install_redis_source
+  fi
+  hash -r 2>/dev/null || true
+fi
+echo "  redis   : OK"
+
+# ── PostgreSQL + pgvector ──────────────────────────────────────────────────────
+if ! command -v psql &>/dev/null; then
+  echo "  Installing PostgreSQL + pgvector..."
+  if [ "${PKG_MGR}" = "apt" ]; then
+    sudo apt-get update -qq
+    sudo apt-get install -y -q postgresql postgresql-contrib
+    install_pgvector_apt
+    PG_MANAGED=0
+    PG_FRESH_INSTALL=1
+  elif [ "${PKG_MGR}" = "dnf" ]; then
+    sudo dnf install -y -q postgresql-server postgresql-contrib
+    sudo postgresql-setup --initdb 2>/dev/null || true
+    PG_MANAGED=0
+    PG_FRESH_INSTALL=1
+  elif [ "${PKG_MGR}" = "yum" ]; then
+    sudo yum install -y -q postgresql-server postgresql-contrib
+    sudo postgresql-setup initdb 2>/dev/null || true
+    PG_MANAGED=0
+    PG_FRESH_INSTALL=1
+  elif [ -n "${CONDA_CMD}" ]; then
+    echo "  Using conda to install postgresql + pgvector..."
+    "${CONDA_CMD}" install -y -q -c conda-forge postgresql pgvector
+    hash -r 2>/dev/null || true
+    PG_MANAGED=1
+    PG_FRESH_INSTALL=1
+  else
+    echo "ERROR: Cannot install PostgreSQL."
+    echo "       No sudo (apt/dnf/yum) or conda found."
+    echo "       Install PostgreSQL 14+ with pgvector manually, then re-run."
     exit 1
   fi
-  echo "  Ollama: OK"
 fi
-echo "  Environment: OK"
+echo "  psql    : $(psql --version 2>/dev/null)"
+echo "  Prerequisites: OK"
 
-# ── [2/8] Install Python dependencies ────────────────────────────────────────
+# ── [2/9] GPU detection + Ollama ──────────────────────────────────────────────
 echo ""
-echo "── [2/8] Installing Python dependencies ──"
+echo "── [2/9] GPU setup ──"
+
+FREE_GPUS=""
+if command -v nvidia-smi &>/dev/null; then
+  echo "  GPU inventory:"
+  nvidia-smi --query-gpu=index,name,memory.used,memory.free \
+    --format=csv,noheader | sed 's/^/    /'
+  # Collect indices of GPUs with 0 MiB used
+  FREE_GPUS=$(nvidia-smi --query-gpu=index,memory.used \
+    --format=csv,noheader,nounits \
+    | awk -F', ' '$2 == 0 {printf sep $1; sep=","} END{print ""}' \
+    | tr -d '[:space:]')
+fi
+
+if [ -z "${FREE_GPUS}" ]; then
+  echo "  WARNING: No completely free GPUs found."
+  echo "           Ollama will use default GPU assignment."
+  echo "           To avoid interfering with other jobs, wait for a free GPU"
+  echo "           then re-run."
+else
+  export CUDA_VISIBLE_DEVICES="${FREE_GPUS}"
+  echo "  Free GPUs → CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}"
+fi
+
+OLLAMA_URL="${OLLAMA_BASE_URL:-http://localhost:11434}"
+
+if ! curl -sf "${OLLAMA_URL}/api/tags" &>/dev/null; then
+  echo "  Starting Ollama..."
+  nohup ollama serve > "${ROOT}/ollama_gpu.log" 2>&1 &
+  OLLAMA_PID=$!
+  echo "  Ollama PID: ${OLLAMA_PID}  log: ${ROOT}/ollama_gpu.log"
+  for i in $(seq 1 30); do
+    curl -sf "${OLLAMA_URL}/api/tags" &>/dev/null && { echo "  Ollama: ready (${i}s)"; break; }
+    sleep 1
+  done
+  curl -sf "${OLLAMA_URL}/api/tags" &>/dev/null \
+    || { echo "ERROR: Ollama did not start — check ${ROOT}/ollama_gpu.log"; exit 1; }
+else
+  echo "  Ollama: already running"
+fi
+
+# Pull models only if not already present
+pull_model() {
+  local model="$1"
+  if ollama list 2>/dev/null | tail -n +2 | awk '{print $1}' | grep -qF "${model}"; then
+    echo "  ${model}: already present"
+  else
+    echo "  Pulling ${model} (first run — may take several minutes)..."
+    ollama pull "${model}"
+    echo "  ${model}: pulled OK"
+  fi
+}
+
+pull_model "llama3.2:1b"
+pull_model "llama3.1:8b"
+
+# ── [3/9] Python dependencies ─────────────────────────────────────────────────
+echo ""
+echo "── [3/9] Installing Python dependencies ──"
 cd "${ROOT}/relay"
 poetry install --no-interaction --quiet
 echo "  Dependencies: OK"
 
-# ── [3/8] Infrastructure ──────────────────────────────────────────────────────
+# ── [4/9] Start Redis + PostgreSQL ────────────────────────────────────────────
 echo ""
-echo "── [3/8] Infrastructure ──"
+echo "── [4/9] Starting services ──"
 
-if command -v docker &>/dev/null && docker compose version &>/dev/null 2>&1; then
-  echo "  Docker found — starting services..."
-  docker compose -f "${ROOT}/infra/docker-compose.yml" up -d
+start_redis_native
 
-  echo "  Waiting for Postgres..."
-  for i in $(seq 1 30); do
-    docker exec infra-postgres-1 pg_isready -U relay -d relay &>/dev/null 2>&1 \
-      && { echo "  Postgres: ready (${i}s)"; break; }
-    sleep 1
-  done
-
-  echo "  Waiting for Redis..."
-  for i in $(seq 1 15); do
-    docker exec infra-redis-1 redis-cli ping &>/dev/null 2>&1 \
-      && { echo "  Redis: ready (${i}s)"; break; }
-    sleep 1
-  done
+if [ "${PG_MANAGED}" -eq 1 ]; then
+  start_postgres_managed
+elif [ "${PG_FRESH_INSTALL}" -eq 1 ]; then
+  start_postgres_system
 else
-  echo "  Docker not found — expecting native Postgres and Redis already running."
-  echo "  DB  : ${DB_URL_PSQL}"
-  echo "  Redis: ${REDIS_URL:-redis://localhost:6379/0}"
+  # Pre-existing postgres — figure out if it's system-managed or user-managed
+  if pg_isready -q 2>/dev/null; then
+    echo "  PostgreSQL: already running"
+  elif command -v pg_ctl &>/dev/null && [ -d "${HOME}/.local/share/relay-pgdata/global" ]; then
+    start_postgres_managed
+  else
+    start_postgres_system
+  fi
 fi
 
-# ── [4/8] DB migrations (idempotent — IF NOT EXISTS throughout) ──────────────
+# Confirm final connection string
+echo "  DATABASE_URL: ${DATABASE_URL}"
+
+# ── [5/9] DB migrations ───────────────────────────────────────────────────────
 echo ""
-echo "── [4/8] Applying DB migrations ──"
+echo "── [5/9] Applying DB migrations ──"
 
 apply_migration() {
   local file="$1"
   local name
   name="$(basename "$file")"
-  if command -v psql &>/dev/null; then
-    # psql accepts the full postgresql://user:pass@host:port/db URI directly.
-    # Suppress "already exists" noise; any real error will still print.
-    psql "${DB_URL_PSQL}" -f "$file" -q 2>&1 \
-      | grep -v "already exists" \
-      | grep -v "^$" \
-      || true
-    echo "  Applied: ${name}"
-  else
-    echo "  WARN: psql not found — skipping ${name}"
-    echo "        Run manually: psql \"${DB_URL_PSQL}\" -f ${file}"
-  fi
+  psql "${DB_URL_PSQL}" -f "$file" -q 2>&1 \
+    | grep -v "already exists" \
+    | grep -v "^$" \
+    || true
+  echo "  Applied: ${name}"
 }
 
 for sql in \
@@ -172,9 +382,9 @@ do
   apply_migration "${sql}"
 done
 
-# ── [5/8] Pytest test suite ───────────────────────────────────────────────────
+# ── [6/9] Pytest suite ────────────────────────────────────────────────────────
 echo ""
-echo "── [5/8] Running pytest (79 tests) ──"
+echo "── [6/9] Running pytest (79 tests) ──"
 
 if [ "${SKIP_TESTS}" -eq 1 ]; then
   echo "  Skipped (--skip-tests)"
@@ -188,9 +398,9 @@ else
   fi
 fi
 
-# ── [6/8] Start relay ─────────────────────────────────────────────────────────
+# ── [7/9] Start relay server ──────────────────────────────────────────────────
 echo ""
-echo "── [6/8] Starting relay ──"
+echo "── [7/9] Starting relay ──"
 pkill -f "uvicorn app.main:app" 2>/dev/null || true
 sleep 1
 
@@ -206,24 +416,24 @@ echo "  PID: ${RELAY_PID}  log: ${RELAY_LOG}"
 HEALTHY=0
 for i in $(seq 1 30); do
   curl -sf "${HOST}/health" &>/dev/null && { HEALTHY=1; echo "  Relay: healthy (${i}s)"; break; }
-  kill -0 "${RELAY_PID}" 2>/dev/null || { echo "ERROR: relay died — check ${RELAY_LOG}"; tail -20 "${RELAY_LOG}"; exit 1; }
+  kill -0 "${RELAY_PID}" 2>/dev/null \
+    || { echo "ERROR: relay died — check ${RELAY_LOG}"; tail -20 "${RELAY_LOG}"; exit 1; }
   sleep 1
 done
 [ "${HEALTHY}" -eq 0 ] && { echo "ERROR: relay not healthy after 30s"; tail -20 "${RELAY_LOG}"; exit 1; }
 
 # Wait for prototype embeddings background task.
 # First run: fastembed downloads BAAI/bge-small-en-v1.5 (~45 MB, up to 3 min).
-# Subsequent runs: already in DB, completes in <1s.
 echo "  Waiting for prototype embeddings (first run may download ~45 MB model)..."
 for i in $(seq 1 150); do
   grep -q "prototype_embeddings" "${RELAY_LOG}" 2>/dev/null && { echo "  Embeddings: ready (${i}s × 2)"; break; }
   sleep 2
 done
 
-# ── [7/8] Smoke test ──────────────────────────────────────────────────────────
+# ── [8/9] Smoke test ──────────────────────────────────────────────────────────
 if [ "${BENCH_ONLY}" -eq 0 ]; then
   echo ""
-  echo "── [7/8] Smoke test (12 checks) ──"
+  echo "── [8/9] Smoke test (12 checks) ──"
   cd "${ROOT}/relay"
   if ! poetry run python "${SCRIPT_DIR}/smoke_test.py" \
       --host "${HOST}" \
@@ -239,9 +449,9 @@ fi
 
 [ "${SMOKE_ONLY}" -eq 1 ] && { echo ""; echo "Smoke-only run complete."; exit 0; }
 
-# ── [8/8] Full benchmark ──────────────────────────────────────────────────────
+# ── [9/9] Full benchmark ──────────────────────────────────────────────────────
 echo ""
-echo "── [8/8] Full benchmark (phases 6–11) ──"
+echo "── [9/9] Full benchmark (phases 6–11) ──"
 echo "  Gold      : ${GOLD}"
 echo "  Cost-gold : ${COST_GOLD}"
 echo "  Output    : ${BENCH_OUT}"
