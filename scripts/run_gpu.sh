@@ -215,9 +215,25 @@ if ! command -v poetry &>/dev/null; then
 fi
 echo "  poetry  : $(poetry --version 2>/dev/null)"
 
+# ── pciutils — Ollama installer needs lspci to detect NVIDIA GPUs ──────────────
+# Also triggers a re-install of Ollama if it was previously installed without it.
+REINSTALL_OLLAMA=0
+if ! command -v lspci &>/dev/null; then
+  if [ "${PKG_MGR}" = "apt" ] && sudo apt-get install -y -q pciutils &>/dev/null; then
+    echo "  pciutils: installed (GPU detection now available)"
+    REINSTALL_OLLAMA=1
+  elif [ "${PKG_MGR}" = "dnf" ] && sudo dnf install -y -q pciutils &>/dev/null; then
+    REINSTALL_OLLAMA=1
+  elif [ "${PKG_MGR}" = "yum" ] && sudo yum install -y -q pciutils &>/dev/null; then
+    REINSTALL_OLLAMA=1
+  fi
+fi
+
 # ── Ollama ─────────────────────────────────────────────────────────────────────
-if ! command -v ollama &>/dev/null; then
-  echo "  Installing Ollama..."
+# Re-run installer if: (a) ollama missing, or (b) lspci was just installed so
+# the installer can now detect and enable CUDA support for H100/A100/etc.
+if ! command -v ollama &>/dev/null || [ "${REINSTALL_OLLAMA}" -eq 1 ]; then
+  echo "  Installing Ollama (GPU-aware)..."
   curl -fsSL https://ollama.com/install.sh | sh
   hash -r 2>/dev/null || true
 fi
@@ -226,10 +242,12 @@ echo "  ollama  : OK ($(ollama --version 2>/dev/null | head -1))"
 # ── Redis ──────────────────────────────────────────────────────────────────────
 if ! command -v redis-server &>/dev/null; then
   echo "  Installing Redis..."
-  if   [ "${PKG_MGR}" = "apt" ]; then sudo apt-get install -y -q redis-server
-  elif [ "${PKG_MGR}" = "dnf" ]; then sudo dnf install -y -q redis
-  elif [ "${PKG_MGR}" = "yum" ]; then sudo yum install -y -q redis
-  elif [ -n "${CONDA_CMD}" ];    then "${CONDA_CMD}" install -y -q -c conda-forge redis
+  # Each branch is in the if-condition so a package-manager failure falls through
+  # to the next option instead of aborting the script (set -e safe).
+  if   [ "${PKG_MGR}" = "apt" ] && sudo apt-get install -y -q redis-server &>/dev/null; then :
+  elif [ "${PKG_MGR}" = "dnf" ] && sudo dnf install -y -q redis &>/dev/null;             then :
+  elif [ "${PKG_MGR}" = "yum" ] && sudo yum install -y -q redis &>/dev/null;             then :
+  elif [ -n "${CONDA_CMD}" ]   && "${CONDA_CMD}" install -y -q -c conda-forge redis;     then :
   else install_redis_source
   fi
   hash -r 2>/dev/null || true
@@ -239,19 +257,19 @@ echo "  redis   : OK"
 # ── PostgreSQL + pgvector ──────────────────────────────────────────────────────
 if ! command -v psql &>/dev/null; then
   echo "  Installing PostgreSQL + pgvector..."
-  if [ "${PKG_MGR}" = "apt" ]; then
-    sudo apt-get update -qq
-    sudo apt-get install -y -q postgresql postgresql-contrib
+  if [ "${PKG_MGR}" = "apt" ] \
+      && sudo apt-get update -qq &>/dev/null \
+      && sudo apt-get install -y -q postgresql postgresql-contrib &>/dev/null; then
     install_pgvector_apt
     PG_MANAGED=0
     PG_FRESH_INSTALL=1
-  elif [ "${PKG_MGR}" = "dnf" ]; then
-    sudo dnf install -y -q postgresql-server postgresql-contrib
+  elif [ "${PKG_MGR}" = "dnf" ] \
+      && sudo dnf install -y -q postgresql-server postgresql-contrib &>/dev/null; then
     sudo postgresql-setup --initdb 2>/dev/null || true
     PG_MANAGED=0
     PG_FRESH_INSTALL=1
-  elif [ "${PKG_MGR}" = "yum" ]; then
-    sudo yum install -y -q postgresql-server postgresql-contrib
+  elif [ "${PKG_MGR}" = "yum" ] \
+      && sudo yum install -y -q postgresql-server postgresql-contrib &>/dev/null; then
     sudo postgresql-setup initdb 2>/dev/null || true
     PG_MANAGED=0
     PG_FRESH_INSTALL=1
@@ -262,8 +280,7 @@ if ! command -v psql &>/dev/null; then
     PG_MANAGED=1
     PG_FRESH_INSTALL=1
   else
-    echo "ERROR: Cannot install PostgreSQL."
-    echo "       No sudo (apt/dnf/yum) or conda found."
+    echo "ERROR: Cannot install PostgreSQL — no working apt/dnf/yum or conda found."
     echo "       Install PostgreSQL 14+ with pgvector manually, then re-run."
     exit 1
   fi
