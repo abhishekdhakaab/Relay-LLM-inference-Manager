@@ -5,7 +5,10 @@ __pycache__/
 .venv/
 dist/
 build/
-eval/*.json
+# CI-generated ephemeral eval files — regenerated every run
+eval/baseline.json
+eval/candidate.json
+# Keep benchmark results (eval/benchmark_*.json are committed)
 .DS_Store
 
 # Private / generated docs
