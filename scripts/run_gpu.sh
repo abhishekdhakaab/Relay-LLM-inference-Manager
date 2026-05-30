@@ -486,6 +486,7 @@ poetry run python "${SCRIPT_DIR}/benchmark_v3.py" \
   --cost-gold "${COST_GOLD}" \
   --out "${BENCH_OUT}" \
   --api-key "${API_KEY}" \
+  --admin-key "${ADMIN_KEY}" \
   ${SLO_FLAG}
 
 echo ""

@@ -309,7 +309,7 @@ def phase_cost_savings(client: httpx.Client, host: str) -> dict:
 # Phase 8: Circuit Breaker
 # ---------------------------------------------------------------------------
 
-def phase_circuit_breaker(host: str) -> dict:
+def phase_circuit_breaker(host: str, admin_key: str = "relay-dev-admin-key-9999") -> dict:
     """
     Verify that when the backend is unavailable, the circuit breaker OPENS
     after at most 5 requests pass through to the failing backend.
@@ -327,10 +327,12 @@ def phase_circuit_breaker(host: str) -> dict:
     print("PHASE 8: Circuit Breaker")
     print("=" * 60)
 
+    admin_headers = {"Authorization": f"Bearer {admin_key}"}
+
     # Read baseline metrics
     metrics_before: dict[str, float] = {}
     try:
-        resp = httpx.get(f"{host}/admin/metrics", timeout=5.0)
+        resp = httpx.get(f"{host}/admin/metrics", headers=admin_headers, timeout=5.0)
         for line in resp.text.splitlines():
             if not line.startswith("#") and " " in line:
                 name, val = line.rsplit(" ", 1)
@@ -454,7 +456,8 @@ def phase_token_budget(client: httpx.Client, host: str) -> dict:
 # Phase 10: SLO Alerting Detection
 # ---------------------------------------------------------------------------
 
-def phase_slo_alerting(host: str, timeout_s: float = 120.0) -> dict:
+def phase_slo_alerting(host: str, timeout_s: float = 120.0,
+                       admin_key: str = "relay-dev-admin-key-9999") -> dict:
     """
     Verify SLO breach is detected within 90 seconds of occurring.
 
@@ -470,13 +473,15 @@ def phase_slo_alerting(host: str, timeout_s: float = 120.0) -> dict:
     print("PHASE 10: SLO Alerting")
     print("=" * 60)
 
+    admin_headers = {"Authorization": f"Bearer {admin_key}"}
+
     # Check /admin/slo
     slo_page_ok = False
     slo_last_checked_recent = False
     slo_metrics_exported = False
 
     try:
-        resp = httpx.get(f"{host}/admin/slo", timeout=10.0)
+        resp = httpx.get(f"{host}/admin/slo", headers=admin_headers, timeout=10.0)
         slo_page_ok = resp.status_code == 200
         print(f"  /admin/slo HTTP {resp.status_code}: {'OK' if slo_page_ok else 'FAIL'}")
     except Exception as e:
@@ -484,7 +489,7 @@ def phase_slo_alerting(host: str, timeout_s: float = 120.0) -> dict:
 
     # Check Prometheus metrics for SLO gauges
     try:
-        resp = httpx.get(f"{host}/admin/metrics", timeout=5.0)
+        resp = httpx.get(f"{host}/admin/metrics", headers=admin_headers, timeout=5.0)
         if resp.status_code == 200:
             slo_metrics_exported = "slo_health" in resp.text or "relay_slo" in resp.text
             print(f"  SLO metrics in /admin/metrics: {'YES' if slo_metrics_exported else 'NO'}")
@@ -499,7 +504,7 @@ def phase_slo_alerting(host: str, timeout_s: float = 120.0) -> dict:
 
     while time.time() - t0 < timeout_s:
         try:
-            resp = httpx.get(f"{host}/admin/metrics", timeout=5.0)
+            resp = httpx.get(f"{host}/admin/metrics", headers=admin_headers, timeout=5.0)
             if resp.status_code == 200 and ("slo_health" in resp.text or "relay_slo_health" in resp.text):
                 slo_fired = True
                 elapsed = time.time() - t0
@@ -711,6 +716,7 @@ def main() -> None:
     ap.add_argument("--skip-regression", action="store_true",
                     help="Skip Phase 11 regression re-run")
     ap.add_argument("--api-key", default="relay-dev-default-key-1234")
+    ap.add_argument("--admin-key", default="relay-dev-admin-key-9999")
     args = ap.parse_args()
 
     print("LLM Relay — Benchmark Suite v3")
@@ -735,11 +741,12 @@ def main() -> None:
     with httpx.Client(timeout=120.0) as client:
         report["cost_router_accuracy"] = phase_cost_router_accuracy(client, args.host, args.cost_gold)
         report["cost_savings"] = phase_cost_savings(client, args.host)
-        report["circuit_breaker"] = phase_circuit_breaker(args.host)
+        report["circuit_breaker"] = phase_circuit_breaker(args.host, admin_key=args.admin_key)
         report["token_budget"] = phase_token_budget(client, args.host)
 
     slo_timeout = 5.0 if args.skip_slo_wait else 90.0
-    report["slo_alerting"] = phase_slo_alerting(args.host, timeout_s=slo_timeout)
+    report["slo_alerting"] = phase_slo_alerting(args.host, timeout_s=slo_timeout,
+                                                 admin_key=args.admin_key)
 
     if not args.skip_regression:
         with httpx.Client(timeout=120.0) as client:
