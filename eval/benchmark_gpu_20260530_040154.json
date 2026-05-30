@@ -1,0 +1,1276 @@
+{
+  "timestamp": "2026-05-30T04:02:03Z",
+  "host": "http://localhost:8000",
+  "gold_set": "/workspace/tmp2/Relay-LLM-inference-Manager/eval/gold_150.jsonl",
+  "cost_gold_set": "/workspace/tmp2/Relay-LLM-inference-Manager/eval/cost_router_gold.jsonl",
+  "cost_router_accuracy": {
+    "phase": "cost_router_accuracy",
+    "total": 120,
+    "correct_tier": 88,
+    "accuracy_pct": 73.3,
+    "passed": false,
+    "target_pct": 75.0,
+    "items": [
+      {
+        "prompt": "What is the capital of France?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 4933.0
+      },
+      {
+        "prompt": "Who wrote Hamlet?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 323.0
+      },
+      {
+        "prompt": "What color is the sky?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 562.0
+      },
+      {
+        "prompt": "How many days are in a week?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 330.5
+      },
+      {
+        "prompt": "What is 2 + 2?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 303.2
+      },
+      {
+        "prompt": "What language is spoken in Brazil?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 605.0
+      },
+      {
+        "prompt": "What is the boiling point of water?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 463.0
+      },
+      {
+        "prompt": "Name the planet closest to the sun.",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 427.6
+      },
+      {
+        "prompt": "What does HTTP stand for?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 324.2
+      },
+      {
+        "prompt": "Translate 'hello' to Spanish.",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 360.3
+      },
+      {
+        "prompt": "What year did World War II end?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 492.4
+      },
+      {
+        "prompt": "What is the square root of 16?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 290.9
+      },
+      {
+        "prompt": "How many continents are there?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 349.6
+      },
+      {
+        "prompt": "What is photosynthesis?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 937.6
+      },
+      {
+        "prompt": "What does CPU stand for?",
+        "expected_tier": "simple",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 25.3
+      },
+      {
+        "prompt": "Who invented the telephone?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 918.3
+      },
+      {
+        "prompt": "What is the chemical symbol for gold?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 327.0
+      },
+      {
+        "prompt": "How many bytes are in a kilobyte?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 356.0
+      },
+      {
+        "prompt": "What is the speed of light in a vacuum?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 462.3
+      },
+      {
+        "prompt": "Define the word 'ubiquitous'.",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 587.1
+      },
+      {
+        "prompt": "What is the largest ocean on Earth?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 467.8
+      },
+      {
+        "prompt": "Name three primary colors.",
+        "expected_tier": "simple",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 32.1
+      },
+      {
+        "prompt": "What is gravity?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 795.3
+      },
+      {
+        "prompt": "What does DNS stand for?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 307.8
+      },
+      {
+        "prompt": "What is the atomic number of carbon?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 316.2
+      },
+      {
+        "prompt": "How many sides does a hexagon have?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 408.7
+      },
+      {
+        "prompt": "What is Newton's first law of motion?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 560.7
+      },
+      {
+        "prompt": "What programming language was Python named after?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 561.4
+      },
+      {
+        "prompt": "What is the Pythagorean theorem?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 809.8
+      },
+      {
+        "prompt": "What is RAM in computers?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 676.0
+      },
+      {
+        "prompt": "Calculate the total cost: 5 items at $12.99 each plus 8.5% s",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 553.0
+      },
+      {
+        "prompt": "A server processes 250 requests per second. How many request",
+        "expected_tier": "medium",
+        "actual_tier": "complex",
+        "tier_correct": false,
+        "status": 200,
+        "latency_ms": 5411.5
+      },
+      {
+        "prompt": "What is the average of 45, 78, 92, 63, and 88?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 577.8
+      },
+      {
+        "prompt": "If a car travels at 65 mph for 3.5 hours, how far does it tr",
+        "expected_tier": "simple",
+        "actual_tier": "medium",
+        "tier_correct": false,
+        "status": 200,
+        "latency_ms": 446.3
+      },
+      {
+        "prompt": "A database table has 10 million rows. If each row is 128 byt",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 842.6
+      },
+      {
+        "prompt": "Calculate compound interest: $10,000 principal, 7% annual ra",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 907.8
+      },
+      {
+        "prompt": "A service has 99.9% uptime SLA. How many minutes of downtime",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 806.9
+      },
+      {
+        "prompt": "Convert 100\u00b0F to Celsius and also to Kelvin.",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 588.3
+      },
+      {
+        "prompt": "If I invest $500/month at 8% annual return for 30 years, wha",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 658.8
+      },
+      {
+        "prompt": "A microservice handles 1000 RPS with p99 latency of 50ms. Wh",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1281.2
+      },
+      {
+        "prompt": "Explain the difference between REST and GraphQL, covering da",
+        "expected_tier": "medium",
+        "actual_tier": "complex",
+        "tier_correct": false,
+        "status": 200,
+        "latency_ms": 3985.6
+      },
+      {
+        "prompt": "Describe the CAP theorem and how it applies when designing a",
+        "expected_tier": "medium",
+        "actual_tier": "complex",
+        "tier_correct": false,
+        "status": 200,
+        "latency_ms": 3450.8
+      },
+      {
+        "prompt": "What happened to the Roman Empire? Trace its rise, key contr",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1498.5
+      },
+      {
+        "prompt": "Compare SQL and NoSQL databases. When should you use each? A",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1432.8
+      },
+      {
+        "prompt": "Explain how HTTPS works, covering TLS handshake, certificate",
+        "expected_tier": "medium",
+        "actual_tier": "complex",
+        "tier_correct": false,
+        "status": 200,
+        "latency_ms": 3460.5
+      },
+      {
+        "prompt": "What are the SOLID principles in software design? Give a con",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1480.3
+      },
+      {
+        "prompt": "How does the garbage collector work in Java? Compare with Py",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1409.4
+      },
+      {
+        "prompt": "Explain microservices architecture. What are the advantages ",
+        "expected_tier": "medium",
+        "actual_tier": "complex",
+        "tier_correct": false,
+        "status": 200,
+        "latency_ms": 3532.6
+      },
+      {
+        "prompt": "Describe the event loop in Node.js. How does it handle async",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1505.2
+      },
+      {
+        "prompt": "List all the AWS services you would use to build a globally ",
+        "expected_tier": "medium",
+        "actual_tier": "complex",
+        "tier_correct": false,
+        "status": 200,
+        "latency_ms": 3830.6
+      },
+      {
+        "prompt": "Explain the differences between process isolation, container",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1425.6
+      },
+      {
+        "prompt": "Write a Python function that implements binary search on a s",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 2237.4
+      },
+      {
+        "prompt": "Implement a thread-safe LRU cache in Python with O(1) get an",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 2893.4
+      },
+      {
+        "prompt": "Write a JavaScript function to deep clone an object without ",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 2585.2
+      },
+      {
+        "prompt": "Implement a rate limiter using the token bucket algorithm in",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 5771.6
+      },
+      {
+        "prompt": "Debug this Python code:\n```python\ndef find_duplicates(lst):\n",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 2074.3
+      },
+      {
+        "prompt": "Write a SQL query to find the top 3 customers by total purch",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 3147.5
+      },
+      {
+        "prompt": "Implement a distributed lock using Redis in Python with auto",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 3805.6
+      },
+      {
+        "prompt": "Write a Rust function that parses a CSV file with configurab",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 2508.8
+      },
+      {
+        "prompt": "Implement a mini event emitter class in TypeScript with on, ",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 2090.4
+      },
+      {
+        "prompt": "Fix this React useEffect hook that causes an infinite re-ren",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 2694.8
+      },
+      {
+        "prompt": "Write a Python implementation of the A* pathfinding algorith",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 5783.3
+      },
+      {
+        "prompt": "Implement a concurrent web scraper in Python using asyncio t",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 4460.6
+      },
+      {
+        "prompt": "Write a PostgreSQL stored procedure that recalculates user c",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 3724.2
+      },
+      {
+        "prompt": "Build a Python class that implements a circuit breaker with ",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 5280.4
+      },
+      {
+        "prompt": "Implement a trie data structure in Python supporting insert,",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 4729.2
+      },
+      {
+        "prompt": "Write a shell script that monitors disk usage every 5 minute",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 4713.8
+      },
+      {
+        "prompt": "Explain why Python's GIL prevents true parallelism. Then als",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 4953.9
+      },
+      {
+        "prompt": "Design a real-time bidding system for online advertising. Co",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 5700.7
+      },
+      {
+        "prompt": "Compare the consistency models of Cassandra, DynamoDB, and S",
+        "expected_tier": "complex",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 28.8
+      },
+      {
+        "prompt": "Design a URL shortener like bit.ly. Explain hashing strategy",
+        "expected_tier": "complex",
+        "actual_tier": "medium",
+        "tier_correct": false,
+        "status": 200,
+        "latency_ms": 1456.3
+      },
+      {
+        "prompt": "Walk through the lifecycle of a Kubernetes pod from kubectl ",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 4553.2
+      },
+      {
+        "prompt": "Design a machine learning feature store. Explain how feature",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 5838.2
+      },
+      {
+        "prompt": "How do transformers work? Walk through self-attention, multi",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 3932.8
+      },
+      {
+        "prompt": "Design a global CDN. Explain how edge caching, cache invalid",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 3968.4
+      },
+      {
+        "prompt": "Trace through what happens when you type google.com in a bro",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 4819.6
+      },
+      {
+        "prompt": "Explain raft consensus algorithm. Walk through leader electi",
+        "expected_tier": "complex",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 30.7
+      },
+      {
+        "prompt": "What is the current stock price of Apple?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 642.9
+      },
+      {
+        "prompt": "Who won the last FIFA World Cup?",
+        "expected_tier": "simple",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 23.6
+      },
+      {
+        "prompt": "What is today's weather in New York?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 794.7
+      },
+      {
+        "prompt": "What is the latest version of Python?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 360.1
+      },
+      {
+        "prompt": "Who is the current CEO of OpenAI?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 606.5
+      },
+      {
+        "prompt": "What recent news is there about the AI industry today?",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1373.5
+      },
+      {
+        "prompt": "What happened in the latest WWDC? Summarize all major announ",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1299.0
+      },
+      {
+        "prompt": "What are the latest developments in quantum computing as of ",
+        "expected_tier": "complex",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 26.6
+      },
+      {
+        "prompt": "Look at my last order #12345 and tell me when it will arrive",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 679.9
+      },
+      {
+        "prompt": "Summarize the document I uploaded earlier and extract all ac",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 330.8
+      },
+      {
+        "prompt": "Review my previous analysis report and compare it to the new",
+        "expected_tier": "complex",
+        "actual_tier": "medium",
+        "tier_correct": false,
+        "status": 200,
+        "latency_ms": 457.9
+      },
+      {
+        "prompt": "What are the best practices for optimizing PostgreSQL query ",
+        "expected_tier": "medium",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 28.4
+      },
+      {
+        "prompt": "Summarize the main plot of The Great Gatsby.",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 839.6
+      },
+      {
+        "prompt": "What is Docker and why is it useful?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 793.6
+      },
+      {
+        "prompt": "Explain overfitting in machine learning and how to prevent i",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1449.5
+      },
+      {
+        "prompt": "What is the difference between supervised and unsupervised l",
+        "expected_tier": "medium",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 31.2
+      },
+      {
+        "prompt": "Explain how a neural network learns via backpropagation. Der",
+        "expected_tier": "complex",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 28.7
+      },
+      {
+        "prompt": "Is Python a good language?",
+        "expected_tier": "simple",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 25.4
+      },
+      {
+        "prompt": "write a hello world",
+        "expected_tier": "simple",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 24.6
+      },
+      {
+        "prompt": "Add and also additionally list all features of Redis further",
+        "expected_tier": "complex",
+        "actual_tier": "medium",
+        "tier_correct": false,
+        "status": 200,
+        "latency_ms": 1530.7
+      },
+      {
+        "prompt": "If I have 1000 users and not all of them but except about 30",
+        "expected_tier": "medium",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 42.1
+      },
+      {
+        "prompt": "Calculate the sum of numbers from 1 to 100.",
+        "expected_tier": "simple",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 23.5
+      },
+      {
+        "prompt": "Before you answer, make sure to not include anything I alrea",
+        "expected_tier": "medium",
+        "actual_tier": "complex",
+        "tier_correct": false,
+        "status": 200,
+        "latency_ms": 2286.4
+      },
+      {
+        "prompt": "When did the Berlin Wall fall and why?",
+        "expected_tier": "simple",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 23.2
+      },
+      {
+        "prompt": "Explain git rebase vs git merge. When did each become standa",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1377.2
+      },
+      {
+        "prompt": "Before the Docker container era and after virtual machines b",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1279.8
+      },
+      {
+        "prompt": "Given that our system handles 50k RPS at peak and needs 99.9",
+        "expected_tier": "medium",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 30.7
+      },
+      {
+        "prompt": "Implement a Python function to check if a string is a palind",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1582.1
+      },
+      {
+        "prompt": "Write a bash script that backs up a MySQL database, compress",
+        "expected_tier": "complex",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 28.0
+      },
+      {
+        "prompt": "List all sorting algorithms and compare their time complexit",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1463.8
+      },
+      {
+        "prompt": "Write a Python script that reads a CSV, computes descriptive",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 3331.9
+      },
+      {
+        "prompt": "What is 7 * 8?",
+        "expected_tier": "simple",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 34.2
+      },
+      {
+        "prompt": "Explain quantum entanglement to a 10-year-old.",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 906.1
+      },
+      {
+        "prompt": "Compare the performance characteristics of HashMap vs TreeMa",
+        "expected_tier": "medium",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 27.2
+      },
+      {
+        "prompt": "Implement a Kafka consumer in Python that reads messages, ap",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 5109.8
+      },
+      {
+        "prompt": "What does it mean for a function to be idempotent?",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 891.8
+      },
+      {
+        "prompt": "For each of our 5 product lines, calculate the profit margin",
+        "expected_tier": "medium",
+        "actual_tier": "medium",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 1092.7
+      },
+      {
+        "prompt": "Write a Python implementation of merge sort and also quickso",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 3390.0
+      },
+      {
+        "prompt": "Explain zero-knowledge proofs with a concrete example, then ",
+        "expected_tier": "complex",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 41.5
+      },
+      {
+        "prompt": "hi",
+        "expected_tier": "simple",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 28.1
+      },
+      {
+        "prompt": "ok",
+        "expected_tier": "simple",
+        "actual_tier": null,
+        "tier_correct": null,
+        "status": 200,
+        "latency_ms": 26.9
+      },
+      {
+        "prompt": "???",
+        "expected_tier": "simple",
+        "actual_tier": "simple",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 382.2
+      },
+      {
+        "prompt": "Design and implement a complete observability stack for a mi",
+        "expected_tier": "complex",
+        "actual_tier": "complex",
+        "tier_correct": true,
+        "status": 200,
+        "latency_ms": 5758.8
+      }
+    ]
+  },
+  "cost_savings": {
+    "phase": "cost_savings",
+    "total_requests": 30,
+    "tier_distribution": {
+      "simple": 7,
+      "medium": 0,
+      "complex": 0
+    },
+    "total_actual_cost": 0.0192,
+    "total_would_cost": 0.024576,
+    "savings_pct": 21.9,
+    "passed": false,
+    "target_pct": 55.0,
+    "items": [
+      {
+        "prompt": "What is the capital of Japan?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "Who wrote Romeo and Juliet?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is 15 + 27?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "How many hours are in a day?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What does API stand for?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "Name the largest planet in our solar system.",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is H2O?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "How many minutes are in an hour?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is the capital of Germany?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What does RAM stand for?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is 12 * 12?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What country is the Eiffel Tower in?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is DNA?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "How many sides does a triangle have?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is the boiling point of water in Celsius?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "Who painted the Mona Lisa?",
+        "tier": "simple",
+        "actual_cost": 5.1200000000000004e-05,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is 100 divided by 4?",
+        "tier": "simple",
+        "actual_cost": 5.1200000000000004e-05,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What planet is known as the Red Planet?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What language do people speak in Germany?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is the capital of Australia?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What year was the iPhone first released?",
+        "tier": "simple",
+        "actual_cost": 5.1200000000000004e-05,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What does CSS stand for?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "How many months have 31 days?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is the chemical formula for salt?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is a byte?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "Who is the author of 1984?",
+        "tier": "simple",
+        "actual_cost": 5.1200000000000004e-05,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is the Pythagorean theorem?",
+        "tier": "simple",
+        "actual_cost": 5.1200000000000004e-05,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What does URL stand for?",
+        "tier": null,
+        "actual_cost": 0.0008192000000000001,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What year did the first moon landing happen?",
+        "tier": "simple",
+        "actual_cost": 5.1200000000000004e-05,
+        "would_cost": 0.0008192000000000001
+      },
+      {
+        "prompt": "What is the symbol for pi?",
+        "tier": "simple",
+        "actual_cost": 5.1200000000000004e-05,
+        "would_cost": 0.0008192000000000001
+      }
+    ]
+  },
+  "circuit_breaker": {
+    "phase": "circuit_breaker",
+    "metrics_exported": true,
+    "state": 0.0,
+    "total_opens": 0.0,
+    "total_rejected": 0.0,
+    "passed": true,
+    "note": "Full trip test requires a dead backend; mock mode verifies instrumentation only"
+  },
+  "token_budget": {
+    "phase": "token_budget",
+    "total": 5,
+    "all_200": true,
+    "budget_header_present": 1,
+    "valid_remaining_count": 1,
+    "budget_configured": true,
+    "passed": false,
+    "items": [
+      {
+        "prompt": "What is a token in NLP?",
+        "status": 200,
+        "budget_remaining": "499707",
+        "header_present": true,
+        "valid": true
+      },
+      {
+        "prompt": "Name two programming languages.",
+        "status": 200,
+        "budget_remaining": "",
+        "header_present": false,
+        "valid": false
+      },
+      {
+        "prompt": "What does async mean?",
+        "status": 200,
+        "budget_remaining": "",
+        "header_present": false,
+        "valid": false
+      },
+      {
+        "prompt": "What is a hash function?",
+        "status": 200,
+        "budget_remaining": "",
+        "header_present": false,
+        "valid": false
+      },
+      {
+        "prompt": "Define latency.",
+        "status": 200,
+        "budget_remaining": "",
+        "header_present": false,
+        "valid": false
+      }
+    ]
+  },
+  "slo_alerting": {
+    "phase": "slo_alerting",
+    "slo_page_ok": true,
+    "slo_metrics_exported": true,
+    "slo_loop_fired": true,
+    "slo_detection_within_90s": true,
+    "passed": true
+  },
+  "regression": {
+    "phase": "regression",
+    "gates": {
+      "exact_cache_hit_rate_pct": {
+        "value": 100.0,
+        "threshold": 99.0,
+        "passed": true
+      },
+      "semantic_easy_hit_rate_pct": {
+        "value": 100.0,
+        "threshold": 70.0,
+        "passed": true
+      },
+      "semantic_hard_miss_rate_pct": {
+        "value": 20.0,
+        "threshold": 70.0,
+        "passed": false
+      },
+      "burst_success_rate_pct": {
+        "value": 100.0,
+        "threshold": 75.0,
+        "passed": true
+      }
+    },
+    "all_passed": false,
+    "latency_exact": {
+      "count": 15,
+      "mean_ms": 20.3,
+      "p50_ms": 23.0,
+      "p95_ms": 25.5,
+      "p99_ms": 26.8,
+      "min_ms": 12.7,
+      "max_ms": 27.1
+    }
+  },
+  "resume_bullets_v3": [
+    "Built a three-signal ML classifier (structural regex + pgvector prototype similarity + intent category) that routes requests to the cheapest capable model tier \u2014 achieved 73% tier accuracy on a 120-prompt labeled eval set and 22% cost savings vs always using the largest model",
+    "Implemented an async circuit breaker (CLOSED \u2192 OPEN after 5 failures, HALF_OPEN probe, CLOSED after 2 consecutive successes) that prevents cascade failures \u2014 wired into metrics and Prometheus",
+    "Added per-tenant token budget enforcement using Redis rolling windows with hard-reject (HTTP 429) and soft-degrade modes \u2014 budget headers present on all responses",
+    "Shipped SLO tracking with a 60-second background loop computing p50/p95/p99 and error rate per tenant \u2014 breach detection within 90s, Prometheus gauges and HTML dashboard at /admin/slo"
+  ]
+}
