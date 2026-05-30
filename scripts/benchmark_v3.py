@@ -127,6 +127,24 @@ async def send_async(client: httpx.AsyncClient, host: str, payload: bytes,
 # Phase 6: Cost Router Accuracy
 # ---------------------------------------------------------------------------
 
+def _flush_caches(label: str = "") -> None:
+    """Flush Redis exact cache and PostgreSQL semantic cache between phases."""
+    import subprocess
+    redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+    redis_host = redis_url.split("//")[-1].split(":")[0] if "://" in redis_url else "localhost"
+    redis_port = redis_url.split(":")[-1].split("/")[0] if ":" in redis_url.split("//")[-1] else "6379"
+    r = subprocess.run(["redis-cli", "-h", redis_host, "-p", redis_port, "FLUSHALL"],
+                       capture_output=True, check=False)
+    redis_ok = r.returncode == 0
+    db_url = os.environ.get("DATABASE_URL", "postgresql://relay:relay@localhost:5432/relay")
+    db_url_psql = db_url.replace("+asyncpg", "")
+    p = subprocess.run(["psql", db_url_psql, "-c", "TRUNCATE semantic_cache_entries;"],
+                       capture_output=True, check=False)
+    pg_ok = p.returncode == 0
+    tag = f" ({label})" if label else ""
+    print(f"  Cache flush{tag}: redis={'OK' if redis_ok else 'WARN'} pg={'OK' if pg_ok else 'WARN'}")
+
+
 def phase_cost_router_accuracy(client: httpx.Client, host: str, cost_gold: str) -> dict:
     """
     Send every prompt in cost_router_gold.jsonl through the relay and check
@@ -138,20 +156,7 @@ def phase_cost_router_accuracy(client: httpx.Client, host: str, cost_gold: str) 
     print("PHASE 6: Cost Router Accuracy")
     print("=" * 60)
 
-    # Clear Redis and pgvector semantic cache so classifier runs fresh (no cached tier interference)
-    import subprocess
-    # Use redis-cli directly (works whether Redis is native or in Docker)
-    redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-    redis_host = redis_url.split("//")[-1].split(":")[0] if "://" in redis_url else "localhost"
-    redis_port = redis_url.split(":")[-1].split("/")[0] if ":" in redis_url.split("//")[-1] else "6379"
-    subprocess.run(["redis-cli", "-h", redis_host, "-p", redis_port, "FLUSHDB"],
-                   capture_output=True, check=False)
-    # Use psql directly with DATABASE_URL
-    db_url = os.environ.get("DATABASE_URL", "postgresql://relay:relay@localhost:5432/relay")
-    db_url_psql = db_url.replace("+asyncpg", "")
-    subprocess.run(["psql", db_url_psql, "-c", "TRUNCATE semantic_cache_entries;"],
-                   capture_output=True, check=False)
-    print("  Caches cleared for clean classifier measurement.")
+    _flush_caches("Phase 6")
 
     rows = load_jsonl(cost_gold)
     correct_tier = 0
@@ -189,14 +194,21 @@ def phase_cost_router_accuracy(client: httpx.Client, host: str, cost_gold: str) 
         icon = "✓" if tier_ok else ("?" if tier_ok is None else "✗")
         print(f"  [{icon}] {i+1:3d}/{total} | expect={expected_tier:8s} | actual={str(actual_tier):8s} | {prompt[:45]}")
 
-    accuracy_pct = correct_tier / max(total, 1) * 100
+    # Exclude cache hits (null tier) from accuracy denominator — they bypass the
+    # classifier so can't be evaluated.  Count them separately for transparency.
+    routed_total = sum(1 for i in items if i["tier_correct"] is not None)
+    cache_hit_count = total - routed_total
+    accuracy_pct = correct_tier / max(routed_total, 1) * 100
     passed = accuracy_pct >= 75.0
 
-    print(f"\n  Tier accuracy: {correct_tier}/{total} = {accuracy_pct:.1f}%  {'PASS ✓' if passed else 'FAIL ✗'} (target ≥75%)")
+    print(f"\n  Cache hits (excluded): {cache_hit_count}/{total}")
+    print(f"  Tier accuracy: {correct_tier}/{routed_total} = {accuracy_pct:.1f}%  {'PASS ✓' if passed else 'FAIL ✗'} (target ≥75%)")
 
     return {
         "phase": "cost_router_accuracy",
         "total": total,
+        "routed_total": routed_total,
+        "cache_hit_count": cache_hit_count,
         "correct_tier": correct_tier,
         "accuracy_pct": round(accuracy_pct, 1),
         "passed": passed,
@@ -219,6 +231,8 @@ def phase_cost_savings(client: httpx.Client, host: str) -> dict:
     print("\n" + "=" * 60)
     print("PHASE 7: Cost Savings Verification")
     print("=" * 60)
+
+    _flush_caches("Phase 7")
 
     simple_prompts = [
         "What is the capital of Japan?",
@@ -391,6 +405,9 @@ def phase_token_budget(client: httpx.Client, host: str) -> dict:
     print("PHASE 9: Token Budget Enforcement")
     print("=" * 60)
 
+    # Flush cache so prompts go through routing (not served from cache, which returns empty budget header)
+    _flush_caches("Phase 9")
+
     prompts = [
         "What is a token in NLP?",
         "Name two programming languages.",
@@ -548,6 +565,10 @@ def phase_regression(client: httpx.Client, host: str, gold_path: str) -> dict:
     print("\n" + "=" * 60)
     print("PHASE 11: Full v2 Regression Guard")
     print("=" * 60)
+
+    # Flush before warmup — Phase 6 populates semantic cache with 120 prompts that
+    # can cause false semantic hits on the "hard miss" test prompts.
+    _flush_caches("Phase 11")
 
     def load_tagged(tag: str) -> list[dict]:
         return load_jsonl(gold_path, tag)
