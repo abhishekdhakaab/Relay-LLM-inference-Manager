@@ -113,7 +113,7 @@ install_pgvector_apt() {
   # Try versioned packages; fall back to building from source
   local pg_ver
   pg_ver=$(psql --version 2>/dev/null | grep -oP '\d+' | head -1)
-  sudo apt-get install -y -q "postgresql-${pg_ver}-pgvector" 2>/dev/null && return 0
+  sudo apt-get install -y -q "postgresql-${pg_ver}-pgvector" &>/dev/null && return 0
 
   echo "  pgvector apt package not found — building from source..."
   sudo apt-get install -y -q build-essential postgresql-server-dev-all git 2>/dev/null
@@ -168,11 +168,13 @@ start_postgres_system() {
     done
     pg_isready -q || { echo "ERROR: PostgreSQL did not start in 20s"; exit 1; }
   fi
-  # Create relay user + database under the postgres superuser (idempotent)
-  sudo -u postgres psql -c "CREATE USER relay WITH SUPERUSER;" 2>/dev/null || true
+  # Create relay user + database under the postgres superuser (idempotent).
+  # Password is required: Ubuntu/Debian default pg_hba.conf uses scram-sha-256
+  # for TCP connections (host 127.0.0.1), so the user must have a password.
+  sudo -u postgres psql -c "CREATE USER relay WITH SUPERUSER PASSWORD 'relay';" 2>/dev/null || true
   sudo -u postgres psql -c "CREATE DATABASE relay OWNER relay;" 2>/dev/null || true
-  DB_URL_PSQL="postgresql://relay@localhost/relay"
-  export DATABASE_URL="postgresql+asyncpg://relay@localhost/relay"
+  DB_URL_PSQL="postgresql://relay:relay@localhost/relay"
+  export DATABASE_URL="postgresql+asyncpg://relay:relay@localhost/relay"
 }
 
 start_postgres_managed() {
@@ -185,7 +187,8 @@ start_postgres_managed() {
   else
     if [ ! -d "${pgdata}/global" ]; then
       echo "  Initialising PostgreSQL data directory..."
-      initdb -D "${pgdata}" -U relay --auth=trust --no-instructions 2>/dev/null
+      initdb -D "${pgdata}" -U relay --auth=trust --no-instructions 2>/dev/null \
+        || initdb -D "${pgdata}" -U relay --auth=trust
     fi
     echo "  Starting PostgreSQL..."
     pg_ctl -D "${pgdata}" -l "${pg_log}" start
