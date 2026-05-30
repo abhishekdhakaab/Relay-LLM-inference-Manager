@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import random
 import sys
 import time
@@ -139,10 +140,16 @@ def phase_cost_router_accuracy(client: httpx.Client, host: str, cost_gold: str) 
 
     # Clear Redis and pgvector semantic cache so classifier runs fresh (no cached tier interference)
     import subprocess
-    subprocess.run(["docker", "exec", "infra-redis-1", "redis-cli", "FLUSHDB"],
+    # Use redis-cli directly (works whether Redis is native or in Docker)
+    redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+    redis_host = redis_url.split("//")[-1].split(":")[0] if "://" in redis_url else "localhost"
+    redis_port = redis_url.split(":")[-1].split("/")[0] if ":" in redis_url.split("//")[-1] else "6379"
+    subprocess.run(["redis-cli", "-h", redis_host, "-p", redis_port, "FLUSHDB"],
                    capture_output=True, check=False)
-    subprocess.run(["docker", "exec", "infra-postgres-1", "psql", "-U", "relay", "relay",
-                    "-c", "TRUNCATE semantic_cache_entries;"],
+    # Use psql directly with DATABASE_URL
+    db_url = os.environ.get("DATABASE_URL", "postgresql://relay:relay@localhost:5432/relay")
+    db_url_psql = db_url.replace("+asyncpg", "")
+    subprocess.run(["psql", db_url_psql, "-c", "TRUNCATE semantic_cache_entries;"],
                    capture_output=True, check=False)
     print("  Caches cleared for clean classifier measurement.")
 
