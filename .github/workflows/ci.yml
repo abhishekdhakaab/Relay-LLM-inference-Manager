@@ -41,8 +41,7 @@ jobs:
       RELAY_HOST: 0.0.0.0
       RELAY_PORT: 8000
 
-      # For CI we still want the relay to run, but you may not have Ollama on GH runners.
-      # We'll add a "mock backend" mode below in code next (recommended).
+      # CI has no Ollama daemon, so requests use the deterministic mock backend.
       BACKEND_MODE: mock
 
     steps:

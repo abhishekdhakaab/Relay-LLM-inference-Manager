@@ -1,8 +1,7 @@
 [tool.poetry]
 name = "relay"
 version = "0.1.0"
-description = "Local-first LLM Relay Platform (M1)"
-authors = ["you <you@example.com>"]
+description = "Local-first inference gateway with cost-aware routing and semantic caching"
 readme = "../README.md"
 packages = [{ include = "app" }]
 

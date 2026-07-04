@@ -1,3 +1,5 @@
+"""Server-rendered dashboards and JSON/metrics admin endpoints."""
+
 from __future__ import annotations
 
 import json
@@ -18,7 +20,7 @@ admin = APIRouter(
 )
 
 
-# ── Shared layout ─────────────────────────────────────────────────────────────
+# Keeping the dashboard self-contained avoids a separate frontend build step.
 
 def _layout(title: str, active: str, content: str) -> str:
     nav_items = [
@@ -332,6 +334,8 @@ def _cache_badge(cache_json: Any) -> str:
 
 @admin.get("/traces", response_class=HTMLResponse)
 async def traces_page(limit: int = Query(default=50, ge=1, le=500)) -> HTMLResponse:
+    """Render the latest request traces."""
+
     rows = await list_traces(limit=limit)
 
     rows_html = ""
@@ -383,12 +387,16 @@ async def traces_page(limit: int = Query(default=50, ge=1, le=500)) -> HTMLRespo
 
 @admin.get("/traces.json")
 async def traces_json(limit: int = Query(default=50, ge=1, le=500)) -> Response:
+    """Return recent traces as JSON."""
+
     rows = await list_traces(limit=limit)
     return Response(content=orjson.dumps(rows), media_type="application/json")
 
 
 @admin.get("/traces/{request_id}", response_class=HTMLResponse)
 async def trace_detail_page(request_id: str) -> HTMLResponse:
+    """Render one trace with timing, policy, cache, and payload details."""
+
     row = await get_trace(request_id)
     if not row:
         content = f"<div class='page-header'><h1>Trace not found</h1><p>{escape(request_id)}</p></div>"
@@ -444,6 +452,8 @@ async def trace_detail_page(request_id: str) -> HTMLResponse:
 
 @admin.get("/traces/{request_id}.json")
 async def trace_detail_json(request_id: str) -> Response:
+    """Return one complete trace as JSON."""
+
     row = await get_trace(request_id)
     if not row:
         return Response(content=orjson.dumps({"error": "not_found"}),
@@ -453,6 +463,8 @@ async def trace_detail_json(request_id: str) -> Response:
 
 @admin.get("/stats.json")
 async def stats_json() -> Response:
+    """Return aggregate relay statistics."""
+
     from app.db.traces_read import get_stats
     stats = await get_stats()
     return Response(content=orjson.dumps(stats), media_type="application/json")
@@ -460,6 +472,8 @@ async def stats_json() -> Response:
 
 @admin.get("/cost", response_class=HTMLResponse)
 async def cost_dashboard() -> HTMLResponse:
+    """Render routing costs, savings, and escalation counts."""
+
     from sqlalchemy import text as sa_text
     from app.db.postgres import get_sessionmaker
 
@@ -553,6 +567,8 @@ async def cost_dashboard() -> HTMLResponse:
 
 @admin.get("/slo", response_class=HTMLResponse)
 async def slo_dashboard() -> HTMLResponse:
+    """Render current per-tenant SLO health."""
+
     import time as _time
     from app.core.slo_checker import get_slo_gauges, get_last_checked_ts
     from app.core.settings import settings
@@ -621,6 +637,8 @@ async def slo_dashboard() -> HTMLResponse:
 
 @admin.get("/metrics")
 async def prometheus_metrics() -> Response:
+    """Expose request, cache, circuit, and SLO gauges for Prometheus."""
+
     from app.db.traces_read import get_stats
     from app.core.slo_checker import get_slo_gauges
     from app.core.ollama_adapter import get_circuit_breaker
@@ -662,6 +680,8 @@ async def prometheus_metrics() -> Response:
 
 @admin.get("/users/{tenant_id}", response_class=HTMLResponse)
 async def users_page(tenant_id: str) -> HTMLResponse:
+    """Render recent usage for users in one tenant."""
+
     from sqlalchemy import text as sa_text
     from app.db.postgres import get_sessionmaker
 

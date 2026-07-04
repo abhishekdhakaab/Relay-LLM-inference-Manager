@@ -1,3 +1,4 @@
+"""Async circuit breaker that contains repeated backend failures."""
 from __future__ import annotations
 
 import asyncio
@@ -6,7 +7,6 @@ from enum import Enum
 from typing import Optional
 
 from app.core.settings import CircuitBreakerConfig
-
 
 class State(Enum):
     CLOSED = "CLOSED"       # normal — all requests pass through
@@ -26,7 +26,7 @@ class CircuitBreaker:
     """
     Async-safe three-state circuit breaker.
 
-    State transitions (spec §2.2):
+    State transitions:
         CLOSED    → OPEN      : failure_threshold consecutive failures
         OPEN      → HALF_OPEN : after recovery_timeout_seconds
         HALF_OPEN → CLOSED    : success_threshold consecutive successes
@@ -44,7 +44,7 @@ class CircuitBreaker:
         self._total_rejected: int = 0
         self._lock = asyncio.Lock()
 
-    # ── Public metrics (read without lock — acceptable approximate reads) ──────
+    # Metrics are approximate by design; locking every scrape would add contention.
 
     @property
     def state(self) -> State:
@@ -62,15 +62,8 @@ class CircuitBreaker:
     def last_failure_timestamp(self) -> Optional[float]:
         return self._last_failure_ts
 
-    # ── Call lifecycle ─────────────────────────────────────────────────────────
-
     async def before_call(self) -> None:
-        """
-        Call this BEFORE making the backend request.
-        Raises CircuitOpenError immediately if the circuit is OPEN.
-        Transitions OPEN → HALF_OPEN when the recovery timeout has elapsed.
-        In HALF_OPEN, requests are allowed through so successes can accumulate.
-        """
+        """Reject open-circuit calls or admit a probe after the cooldown."""
         async with self._lock:
             if self._state == State.CLOSED:
                 return
@@ -79,15 +72,14 @@ class CircuitBreaker:
                 elapsed = time.monotonic() - (self._opened_at or 0.0)
                 remaining = int(self._cfg.recovery_timeout_seconds - elapsed)
                 if elapsed >= self._cfg.recovery_timeout_seconds:
-                    # Recovery timeout elapsed — allow probe traffic through
+                    # The first request after cooldown becomes the recovery probe.
                     self._state = State.HALF_OPEN
                     self._success_streak = 0
-                    # fall through to allow this request
                 else:
                     self._total_rejected += 1
                     raise CircuitOpenError(retry_after_seconds=max(remaining, 1))
 
-            # HALF_OPEN: allow requests through (successes tracked in on_success)
+            # HALF_OPEN traffic is evaluated by on_success/on_failure.
 
     async def on_success(self) -> None:
         """Call after a successful backend response."""
@@ -101,7 +93,6 @@ class CircuitBreaker:
                     self._state = State.CLOSED
                     self._success_streak = 0
                     self._opened_at = None
-            # CLOSED: failure streak already reset above
 
     async def on_failure(self) -> None:
         """Call after a backend failure (timeout or 5xx)."""
@@ -110,7 +101,7 @@ class CircuitBreaker:
             self._failure_streak += 1
 
             if self._state == State.HALF_OPEN:
-                # Any failure in HALF_OPEN reopens immediately
+                # A failed recovery probe reopens the circuit immediately.
                 self._state = State.OPEN
                 self._opened_at = time.monotonic()
                 self._total_opens += 1
@@ -125,8 +116,6 @@ class CircuitBreaker:
                 self._opened_at = time.monotonic()
                 self._total_opens += 1
 
-    # ── Prometheus-style state integer (spec §2.2) ─────────────────────────────
-
     def state_gauge(self) -> int:
-        """0=CLOSED, 1=HALF_OPEN, 2=OPEN"""
+        """Map states to stable numeric values for metrics export."""
         return {State.CLOSED: 0, State.HALF_OPEN: 1, State.OPEN: 2}[self._state]

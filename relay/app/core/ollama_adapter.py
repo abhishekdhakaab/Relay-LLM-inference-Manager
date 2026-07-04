@@ -1,3 +1,4 @@
+"""Ollama backend adapter with circuit-breaker protection."""
 from __future__ import annotations
 
 import time
@@ -10,7 +11,6 @@ from app.core.circuit_breaker import CircuitBreaker, CircuitOpenError
 from app.core.settings import settings
 
 # Module-level singleton — shared across all requests in the same process.
-# Initialised lazily on first adapter use so startup order doesn't matter.
 _circuit_breaker: CircuitBreaker | None = None
 
 
@@ -24,20 +24,14 @@ def get_circuit_breaker() -> CircuitBreaker:
 
 @dataclass(frozen=True)
 class OllamaAdapter:
+    """Generate text through Ollama's non-streaming HTTP endpoint."""
+
     base_url: str
     name: str = "ollama"
-
-    async def generate(
-        self,
-        *,
-        model: str,
-        prompt: str,
-        temperature: float,
-        max_tokens: int,
-    ) -> GenerationResult:
+    async def generate(self,*,model: str,prompt: str,temperature: float,max_tokens: int,) -> GenerationResult:
+        """Run one protected backend call and update breaker state."""
         cb = get_circuit_breaker()
 
-        # Will raise CircuitOpenError immediately if circuit is OPEN
         await cb.before_call()
 
         t0 = time.perf_counter()
@@ -52,21 +46,14 @@ class OllamaAdapter:
             await cb.on_failure()
             raise
         except Exception:
-            # Non-network errors (e.g., JSON parse) — still counts as failure
+            # Parse errors also indicate an unusable backend response.
             await cb.on_failure()
             raise
 
         await cb.on_success()
         return result
-
-    async def _do_generate(
-        self,
-        *,
-        model: str,
-        prompt: str,
-        temperature: float,
-        max_tokens: int,
-    ) -> GenerationResult:
+    async def _do_generate(self,*,model: str,prompt: str,temperature: float,max_tokens: int,) -> GenerationResult:
+        """Call Ollama and normalize its provider-specific response."""
         t0 = time.perf_counter()
 
         payload = {
@@ -78,7 +65,7 @@ class OllamaAdapter:
                 "num_predict": max_tokens,
             },
         }
-
+        # Long generations need a wider timeout than ordinary API traffic.
         async with httpx.AsyncClient(timeout=120.0) as client:
             r = await client.post(f"{self.base_url}/api/generate", json=payload)
             r.raise_for_status()

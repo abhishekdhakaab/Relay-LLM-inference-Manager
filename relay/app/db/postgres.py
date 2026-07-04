@@ -1,3 +1,5 @@
+"""Lazy PostgreSQL connections and request-trace persistence."""
+
 from __future__ import annotations
 
 from typing import Any, Optional
@@ -12,34 +14,25 @@ from app.core.settings import settings
 _engine: Optional[AsyncEngine] = None
 _sessionmaker: Optional[async_sessionmaker[AsyncSession]] = None
 
-
 def get_engine() -> AsyncEngine:
+    """Create the shared async engine on first use."""
     global _engine
     if _engine is None:
         _engine = create_async_engine(settings.database_url, pool_pre_ping=True)
     return _engine
 
-
 def get_sessionmaker() -> async_sessionmaker[AsyncSession]:
+    """Return the process-wide async session factory."""
     global _sessionmaker
     if _sessionmaker is None:
         _sessionmaker = async_sessionmaker(get_engine(), expire_on_commit=False)
     return _sessionmaker
 
-
 async def insert_trace(payload: dict[str, Any]) -> None:
-    """
-    Insert a request trace row.
+    """Persist a trace from any terminal request path."""
 
-    The payload dict may contain any subset of columns — missing keys default
-    to NULL so existing callers (exact/semantic cache hits) don't need to be
-    updated to pass new columns; they simply won't be populated.
-    """
-    # Provide None defaults for every column so SQLAlchemy doesn't error on
-    # missing keys.  The ON CONFLICT DO NOTHING guard prevents duplicate inserts
-    # if the same request_id is submitted twice (defensive).
+    # Terminal paths populate different fields, so every optional column gets a default.
     defaults: dict[str, Any] = {
-        # Original columns
         "request_id": None, "tenant_id": None, "user_id": None, "endpoint": None,
         "model": None, "status_code": None, "request_hash": None,
         "latency_ms": None, "backend_latency_ms": None, "queue_wait_ms": None,
@@ -47,20 +40,17 @@ async def insert_trace(payload: dict[str, Any]) -> None:
         "total_tokens": None, "request_json": "null", "response_json": "null",
         "error_json": "null", "policy_version": None, "plan_json": "null",
         "decision_trace_json": "null", "cache_json": "null",
-        # Feature 1 — Cost Router
         "complexity_score": None, "intent_type": None, "tier_selected": None,
         "forced_by_tool_flag": None, "needs_computation": None, "needs_code": None,
         "needs_retrieval": None, "needs_personal_context": None, "is_multi_hop": None,
         "actual_cost_usd": None, "would_cost_usd": None,
         "escalated": False, "escalated_from_tier": None,
         "classifier_latency_ms": None,
-        # Feature 3 — OTel
         "otel_trace_id": None,
-        # Feature 5 — SLO error tracking
         "error": False, "error_type": None,
     }
     row = {**defaults, **payload}
-
+    # Explicit casts keep JSON serialization at the boundary and parameterized.
     stmt = text(
         """
         INSERT INTO request_traces (

@@ -1,3 +1,5 @@
+"""OpenTelemetry setup and trace-context helpers."""
+
 from __future__ import annotations
 
 import os
@@ -18,18 +20,11 @@ def configure_tracing(
     service_name: str = "llm-relay",
     otlp_endpoint: Optional[str] = None,
 ) -> TracerProvider:
-    """
-    Initialise the global OTel TracerProvider once.
-
-    If OTEL_EXPORTER_OTLP_ENDPOINT is set (or otlp_endpoint is provided),
-    spans are exported to Jaeger via gRPC.  Otherwise (e.g. in unit tests
-    or mock backend mode), an InMemorySpanExporter is used so tests can
-    inspect spans without a running Jaeger instance.
-    """
+    """Initialize one provider, exporting remotely only when configured."""
     global _provider, _test_exporter
 
     if _provider is not None:
-        return _provider  # idempotent
+        return _provider  # FastAPI test clients may create the app repeatedly.
 
     resource = Resource.create({"service.name": service_name})
     _provider = TracerProvider(resource=resource)
@@ -40,7 +35,7 @@ def configure_tracing(
         exporter = OTLPSpanExporter(endpoint=endpoint, insecure=True)
         _provider.add_span_processor(BatchSpanProcessor(exporter))
     else:
-        # Fallback: in-memory exporter — useful in CI / mock mode
+        # In-memory spans keep tracing testable without a collector.
         _test_exporter = InMemorySpanExporter()
         _provider.add_span_processor(SimpleSpanProcessor(_test_exporter))
 
@@ -54,15 +49,12 @@ def get_tracer(name: str = "llm-relay") -> trace.Tracer:
 
 
 def get_test_exporter() -> Optional[InMemorySpanExporter]:
-    """Expose the in-memory exporter for tests (None when real Jaeger is used)."""
+    """Expose the in-memory exporter when no remote endpoint is configured."""
     return _test_exporter
 
 
 def extract_trace_id() -> str:
-    """
-    Return the current span's trace_id as a 32-char hex string.
-    Returns empty string if there is no active span.
-    """
+    """Return the active trace ID as 32 hex characters, or an empty string."""
     span = trace.get_current_span()
     ctx = span.get_span_context()
     if ctx.is_valid:

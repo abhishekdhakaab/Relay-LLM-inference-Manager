@@ -1,3 +1,4 @@
+"""Soft per-user token budgets layered below tenant quotas."""
 from __future__ import annotations
 
 import math
@@ -9,6 +10,8 @@ from app.db.redis_client import get_redis
 
 @dataclass
 class UserBudgetResult:
+    """Result of reserving tokens from a user's fixed window."""
+
     allowed: bool
     remaining: int
     reset_in_seconds: int
@@ -30,11 +33,7 @@ async def check_user_budget(
     limit: int,
     window_seconds: int = 3600,
 ) -> UserBudgetResult:
-    """
-    Soft per-user token cap. Unlike the tenant hard-reject budget, this
-    returns allowed=False only when the user is MORE than 2x over their limit.
-    Under 2x they are allowed through with a warning in the trace.
-    """
+    """Reserve usage, blocking only after the user exceeds twice their limit."""
     redis = get_redis()
     bucket = _window_bucket(window_seconds)
     key = f"user_budget:{tenant_id}:{user_id}:{bucket}"
@@ -44,7 +43,7 @@ async def check_user_budget(
     await redis.expire(key, ttl)
     remaining = max(0, limit - new_total)
 
-    # Hard block only above 2x limit to avoid degrading legitimate users
+    # The grace band tolerates bursts while still containing sustained abuse.
     if new_total > limit * 2:
         await redis.decrby(key, estimated_tokens)
         return UserBudgetResult(

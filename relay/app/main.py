@@ -1,3 +1,5 @@
+"""FastAPI application lifecycle and background maintenance tasks."""
+
 from __future__ import annotations
 
 import asyncio
@@ -19,8 +21,10 @@ _slo_task: asyncio.Task | None = None
 
 
 def create_app() -> FastAPI:
+    """Configure and assemble the relay application."""
+
     configure_logging(settings.relay_log_level)
-    configure_tracing()  # idempotent; reads OTEL_EXPORTER_OTLP_ENDPOINT from env
+    configure_tracing()  # Safe to call more than once during test app creation.
     app = FastAPI(title="LLM Relay", version="0.3.0")
 
     app.include_router(router)
@@ -31,8 +35,7 @@ def create_app() -> FastAPI:
         global _slo_task
         policy = settings.load_policy()
         init_scheduler(policy)
-        # Populate prototype embeddings as a background task so startup doesn't
-        # block on the ~30s first-run ONNX model download from HuggingFace.
+        # The first model download is slow, so prototype setup must not block startup.
         asyncio.create_task(_populate_prototype_embeddings(), name="embed_prototypes")
         _slo_task = asyncio.create_task(_slo_loop(policy), name="slo_checker")
         log.info("startup_complete", version="0.3.0", policy_version=policy.policy_version)
@@ -51,11 +54,7 @@ def create_app() -> FastAPI:
 
 
 async def _populate_prototype_embeddings() -> None:
-    """
-    Compute and persist embeddings for any complexity_prototypes row where
-    embedding IS NULL.  Runs once at startup; subsequent startups are a no-op
-    because rows already have embeddings stored in Postgres.
-    """
+    """Fill missing intent-prototype embeddings without recomputing stored rows."""
     from sqlalchemy import text as sa_text
     from app.core.embeddings import embed_text
 
@@ -87,7 +86,7 @@ async def _populate_prototype_embeddings() -> None:
 
 
 async def _slo_loop(policy) -> None:
-    """Background task: evaluate SLO compliance every 60 seconds."""
+    """Evaluate SLO compliance once per minute until shutdown."""
     while True:
         try:
             async with get_sessionmaker()() as session:

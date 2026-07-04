@@ -1,8 +1,8 @@
 {
   "timestamp": "2026-05-30T04:14:45Z",
   "host": "http://localhost:8000",
-  "gold_set": "/workspace/tmp2/Relay-LLM-inference-Manager/eval/gold_150.jsonl",
-  "cost_gold_set": "/workspace/tmp2/Relay-LLM-inference-Manager/eval/cost_router_gold.jsonl",
+  "gold_set": "eval/gold_150.jsonl",
+  "cost_gold_set": "eval/cost_router_gold.jsonl",
   "cost_router_accuracy": {
     "phase": "cost_router_accuracy",
     "total": 120,

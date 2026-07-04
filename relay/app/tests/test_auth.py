@@ -1,5 +1,5 @@
 """
-Tests for Feature 1 (API key auth) and Feature 2 (user identity / resolve_user).
+Tests for API-key authorization and per-tenant user identity.
 All DB calls are mocked — no Postgres or Redis required.
 """
 from __future__ import annotations

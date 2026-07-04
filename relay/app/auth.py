@@ -1,3 +1,5 @@
+"""Bearer-key authentication and optional per-user identity resolution."""
+
 from __future__ import annotations
 
 import hashlib
@@ -18,10 +20,7 @@ def _hash_key(raw_key: str) -> str:
 
 
 async def _lookup_key(raw_key: str) -> Optional[dict]:
-    """
-    Returns the api_keys row if the key is active, else None.
-    Updates last_used_at as a fire-and-forget side effect.
-    """
+    """Return an active API-key row and update its last-used timestamp."""
     key_hash = _hash_key(raw_key)
     q = sa_text(
         """
@@ -48,11 +47,7 @@ async def require_chat_auth(
     authorization: str = Header(default=""),
     x_tenant_id: str = Header(default=""),
 ) -> dict:
-    """
-    FastAPI dependency for /v1/* routes.
-    Validates the Bearer token and returns the key row.
-    The tenant_id from the token overrides any X-Tenant-Id header value.
-    """
+    """Require chat scope and derive tenant identity from the bearer key."""
     if not authorization.startswith("Bearer "):
         raise HTTPException(
             status_code=401,
@@ -96,12 +91,7 @@ async def resolve_user(
     x_user_id: str = Header(default="anonymous"),
     auth: dict = Depends(require_chat_auth),
 ) -> dict:
-    """
-    Dependency that combines auth + user lookup.
-    Returns a context dict: {tenant_id, user_id, key_row, user_row | None}.
-    Unknown user_ids are allowed (user_row = None) so existing clients
-    without an X-User-Id header keep working.
-    """
+    """Combine key identity with an optional user record in the same tenant."""
     tenant_id = auth["tenant_id"]
     user_id = x_user_id.strip() or "anonymous"
 

@@ -1,5 +1,5 @@
 """
-Tests for Feature 4 — Redis-backed scheduler queue depth and async admission_check.
+Tests for Redis-backed queue depth and asynchronous admission control.
 No live Redis or Postgres needed.
 """
 from __future__ import annotations
@@ -95,10 +95,10 @@ def test_long_lane_for_large_prompt():
     assert s.lane_for_prompt_chars(99_999) == "long"
 
 
-# ── admission_check is a coroutine (Feature 4 contract) ───────────────────────
+# admission_check must stay awaitable because it reads shared Redis depth.
 
 def test_admission_check_returns_coroutine():
-    """After Feature 4, admission_check must be async."""
+    """The admission check remains asynchronous."""
     s = Scheduler(_policy())
     mock_redis = AsyncMock()
     mock_redis.get = AsyncMock(return_value=b"0")

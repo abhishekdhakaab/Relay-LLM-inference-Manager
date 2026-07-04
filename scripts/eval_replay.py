@@ -1,3 +1,5 @@
+"""Replay a small gold set and write latency, token, and quality metrics."""
+
 from __future__ import annotations
 
 import argparse
@@ -15,6 +17,7 @@ from app.core.embeddings import embed_text
 
 
 def percentile(vals: list[float], p: float) -> float:
+    """Return a linearly interpolated percentile."""
     if not vals:
         return 0.0
     s = sorted(vals)
@@ -27,6 +30,7 @@ def percentile(vals: list[float], p: float) -> float:
 
 
 def cosine(a: list[float], b: list[float]) -> float:
+    """Compute cosine similarity without another numerical dependency."""
     dot = 0.0
     na = 0.0
     nb = 0.0
@@ -39,6 +43,7 @@ def cosine(a: list[float], b: list[float]) -> float:
 
 
 def extract_text(resp: dict[str, Any]) -> str:
+    """Read assistant text from the OpenAI-compatible response shape."""
     try:
         return resp["choices"][0]["message"]["content"] or ""
     except Exception:
@@ -51,12 +56,13 @@ def extract_tokens(resp: dict[str, Any]) -> int:
         v = usage.get(k)
         if isinstance(v, int):
             return v
-    # fallback proxy: chars/4 roughly
+    # Character count is only a fallback for providers that omit usage metadata.
     txt = extract_text(resp)
     return max(1, len(txt) // 4)
 
 
 def main() -> None:
+    """Replay the dataset and persist a machine-readable report."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--host", default="http://localhost:8000")
     ap.add_argument("--gold", default="eval/gold.jsonl")

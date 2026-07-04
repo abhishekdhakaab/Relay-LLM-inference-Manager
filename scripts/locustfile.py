@@ -1,3 +1,5 @@
+"""Locust workload mixing short, long, and semantic-cache requests."""
+
 from __future__ import annotations
 
 import json
@@ -10,6 +12,7 @@ TENANT = "default"
 
 
 def make_payload(prompt: str) -> dict:
+    """Build the supported OpenAI-compatible request body."""
     return {"model": "local-ollama", "messages": [{"role": "user", "content": prompt}]}
 
 
@@ -35,6 +38,8 @@ SEMANTIC_PAIRS = [
 
 
 class RelayUser(HttpUser):
+    """Exercise the relay with a cache-aware request distribution."""
+
     wait_time = between(0.05, 0.3)
 
     def _post(self, prompt: str) -> None:
@@ -61,6 +66,7 @@ class RelayUser(HttpUser):
 
     @task(2)
     def semantic(self) -> None:
+        # Alternating paraphrases creates a repeatable semantic-cache workload.
         a, b = random.choice(SEMANTIC_PAIRS)
         prompt = a if int(time.time() * 10) % 2 == 0 else b
         self._post(prompt)

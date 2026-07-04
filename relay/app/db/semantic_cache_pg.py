@@ -1,3 +1,4 @@
+"""Store and retrieve semantic-cache entries with pgvector."""
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
@@ -10,21 +11,11 @@ from app.db.postgres import get_sessionmaker
 
 
 def _vec_literal(vec: list[float]) -> str:
-    # pgvector accepts: '[1,2,3]'::vector
+    # pgvector's text input format is the most portable parameter representation.
     return "[" + ",".join(f"{x:.6f}" for x in vec) + "]"
 
-
-async def semantic_lookup(
-    *,
-    tenant_id: str,
-    plan_sig: str,
-    query_vec: list[float],
-) -> Optional[dict[str, Any]]:
-    """
-    Returns best match: {id, response_json, similarity}
-    Using cosine distance (<=>) with vector_cosine_ops.
-    similarity ≈ 1 - cosine_distance
-    """
+async def semantic_lookup(*,tenant_id: str,plan_sig: str,query_vec: list[float],) -> Optional[dict[str, Any]]:
+    """Return the nearest unexpired entry for a tenant and plan."""
     q = text(
         """
         SELECT
@@ -48,22 +39,15 @@ async def semantic_lookup(
 
     async with get_sessionmaker()() as session:
         res = await session.execute(q, params)
+        # The caller applies the tenant's threshold before counting this as a hit.
         row = res.mappings().first()
         return dict(row) if row else None
 
+async def semantic_store(*,tenant_id: str,plan_sig: str,request_hash: str,prompt_text: str,embedding: list[float],response_obj: dict[str, Any],ttl_seconds: int,) -> str:
+    """Insert an expiring cache entry and return its traceable UUID."""
 
-async def semantic_store(
-    *,
-    tenant_id: str,
-    plan_sig: str,
-    request_hash: str,
-    prompt_text: str,
-    embedding: list[float],
-    response_obj: dict[str, Any],
-    ttl_seconds: int,
-) -> str:
     expires_at = datetime.now(timezone.utc) + timedelta(seconds=ttl_seconds)
-
+    # PostgreSQL rows use an explicit timestamp because they do not expire like Redis keys.
     q = text(
         """
         INSERT INTO semantic_cache_entries

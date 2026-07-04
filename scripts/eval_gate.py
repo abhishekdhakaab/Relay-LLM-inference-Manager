@@ -1,3 +1,5 @@
+"""Fail CI when a candidate run regresses latency, cost, or quality."""
+
 from __future__ import annotations
 
 import argparse
@@ -7,11 +9,12 @@ from pathlib import Path
 
 
 def main() -> None:
+    """Compare two evaluation reports against configurable thresholds."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--baseline", required=True)
     ap.add_argument("--candidate", required=True)
 
-    # thresholds
+    # Defaults allow ordinary run-to-run noise without hiding material regressions.
     ap.add_argument("--latency_p95_regress_pct", type=float, default=15.0)
     ap.add_argument("--latency_p99_regress_pct", type=float, default=20.0)
     ap.add_argument("--tokens_avg_regress_pct", type=float, default=15.0)
@@ -30,7 +33,6 @@ def main() -> None:
             return 0.0 if cv <= 0 else 999.0
         return ((cv - bv) / bv) * 100.0
 
-    # Latency gates
     b_p95 = float(b["latency_ms"]["p95"])
     c_p95 = float(c["latency_ms"]["p95"])
     if regress_pct(b_p95, c_p95) > args.latency_p95_regress_pct:
@@ -41,13 +43,12 @@ def main() -> None:
     if regress_pct(b_p99, c_p99) > args.latency_p99_regress_pct:
         fails.append(f"Latency p99 regressed: baseline {b_p99:.1f}ms → candidate {c_p99:.1f}ms")
 
-    # Cost proxy gate
     b_tok = float(b["tokens_proxy"]["avg"])
     c_tok = float(c["tokens_proxy"]["avg"])
     if regress_pct(b_tok, c_tok) > args.tokens_avg_regress_pct:
         fails.append(f"Tokens proxy avg regressed: baseline {b_tok:.1f} → candidate {c_tok:.1f}")
 
-    # Quality gates (only if present)
+    # A baseline-only report has no similarity scores, so quality gates are optional.
     qavg = c.get("quality_similarity_vs_baseline", {}).get("avg")
     qp10 = c.get("quality_similarity_vs_baseline", {}).get("p10")
 

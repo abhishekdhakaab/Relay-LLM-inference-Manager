@@ -1,3 +1,5 @@
+"""Health and OpenAI-compatible chat-completions routes."""
+
 from __future__ import annotations
 
 import time
@@ -49,6 +51,7 @@ log = get_logger(component="api")
 
 @router.get("/health")
 async def health() -> dict[str, str]:
+    """Return a dependency-free liveness response."""
     return {"status": "ok"}
 
 
@@ -57,6 +60,8 @@ async def chat_completions(
     req: ChatCompletionsRequest,
     ctx: dict = Depends(resolve_user),
 ) -> ChatCompletionsResponse:
+    """Run one authenticated chat request through cache, policy, and backend."""
+
     if req.stream:
         raise HTTPException(status_code=400, detail="stream=true is not supported yet")
 

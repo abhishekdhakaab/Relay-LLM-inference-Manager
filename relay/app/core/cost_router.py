@@ -1,3 +1,4 @@
+"""Translate classifier output into model, token, and cost decisions."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -6,12 +7,13 @@ from typing import Optional
 from app.core.classifier import CapabilityVector
 from app.core.settings import CostRouterConfig
 
-# Tier ordering used for "upgrade" comparisons
+# Rank comparisons guarantee that capability flags can only upgrade a request.
 _TIER_RANK: dict[str, int] = {"simple": 0, "medium": 1, "complex": 2}
-
 
 @dataclass
 class RoutingDecision:
+    """Routing values needed by generation, accounting, and tracing."""
+
     tier_name: str                      # "simple" | "medium" | "complex"
     model: str
     max_tokens: int
@@ -22,18 +24,12 @@ class RoutingDecision:
 
 
 def route(vector: CapabilityVector, policy: CostRouterConfig) -> RoutingDecision:
-    """
-    Translate a CapabilityVector into a RoutingDecision.
+    """Choose a base tier, apply capability floors, and estimate its cost."""
 
-    Algorithm (spec §1.8):
-    1. Pick initial tier from complexity_score thresholds.
-    2. Apply tool-flag overrides — each can only upgrade, never downgrade.
-    3. Compute estimated_cost_usd and would_cost_usd.
-    """
+
     tiers = policy.tiers
     if not tiers:
-        # Policy YAML missing cost_router.tiers — fall back to safe default.
-        # This should not happen in production; the YAML validator will catch it.
+        # A conservative fallback keeps malformed or legacy policies usable.
         return RoutingDecision(
             tier_name="complex",
             model="llama3.1:8b",
@@ -44,13 +40,10 @@ def route(vector: CapabilityVector, policy: CostRouterConfig) -> RoutingDecision
             would_cost_usd=(1024 / 1000) * 0.002,
         )
 
-    # Step 1: pick tier by complexity score threshold
     tier_name = _pick_tier_by_score(vector.complexity_score, tiers)
 
-    # Step 2: apply tool-flag overrides (can only upgrade)
     overrides = policy.tool_flag_overrides
     forced_by: Optional[str] = None
-
     flag_override_map = {
         "needs_computation": overrides.needs_computation,
         "needs_code": overrides.needs_code,
@@ -72,7 +65,7 @@ def route(vector: CapabilityVector, policy: CostRouterConfig) -> RoutingDecision
     tier_cfg = tiers[tier_name]
     complex_cfg = tiers.get("complex", tier_cfg)
 
-    # Step 3: cost estimates
+    # Compare every route with the complex tier to make savings visible in traces.
     estimated_cost = (tier_cfg.max_tokens / 1000) * tier_cfg.cost_per_1k_tokens
     would_cost = (complex_cfg.max_tokens / 1000) * complex_cfg.cost_per_1k_tokens
 
@@ -88,41 +81,31 @@ def route(vector: CapabilityVector, policy: CostRouterConfig) -> RoutingDecision
 
 
 def _pick_tier_by_score(score: float, tiers: dict) -> str:
-    """
-    Walk tiers in complexity_max ascending order; return the first tier
-    whose complexity_max >= score.  Fall back to "complex" if none match.
-    """
+    """Return the first configured tier whose upper bound contains the score."""
     ordered = sorted(tiers.items(), key=lambda kv: kv[1].complexity_max)
     for name, cfg in ordered:
         if score <= cfg.complexity_max:
             return name
     return ordered[-1][0] if ordered else "complex"
 
-
 def check_escalation(
     response_text: str,
     decision: RoutingDecision,
     policy: CostRouterConfig,
 ) -> bool:
-    """
-    Returns True if the response looks wrong and should be escalated.
-    Spec §1.9 — two conditions, either is sufficient:
-      1. Response too short relative to max_tokens.
-      2. A hedge phrase found in response text.
-    """
+    """Flag short or hedged responses for retry on the next tier."""
     esc = policy.escalation
     if not esc.enabled:
         return False
     if decision.tier_name == "complex":
-        return False  # already at top tier, nowhere to escalate
+        return False  # The complex tier has no fallback above it.
 
-    # Condition 1: response too short
+    # Tokens average roughly 0.75 English words in the benchmark workload.
     word_count = len(response_text.split())
     min_words = esc.min_response_length_ratio * decision.max_tokens * 0.75
     if word_count < min_words:
         return True
 
-    # Condition 2: hedge phrase in response
     lower_text = response_text.lower()
     for phrase in esc.hedge_phrases:
         if phrase.lower() in lower_text:

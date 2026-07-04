@@ -1,9 +1,12 @@
+"""Read models for trace detail and aggregate dashboard queries."""
+
 from __future__ import annotations
 from typing import Any, Optional
 from sqlalchemy import text
 from app.db.postgres import get_sessionmaker
 
 async def list_traces(limit:int=50) ->list[dict[str,Any]]:
+    """Return the newest request traces for the admin list."""
     q = text(
         """
         SELECT
@@ -30,6 +33,7 @@ async def list_traces(limit:int=50) ->list[dict[str,Any]]:
         return [dict(r) for r in rows]
     
 async def get_trace(request_id:str)->Optional[dict[str,Any]]:
+    """Return one complete request trace by ID."""
     q = text(
         """
         SELECT
@@ -66,6 +70,7 @@ async def get_trace(request_id:str)->Optional[dict[str,Any]]:
 
 
 async def get_stats() -> dict[str, Any]:
+    """Aggregate latency, cache, token, and routing metrics across traces."""
     q = text(
         """
         SELECT
@@ -116,6 +121,7 @@ async def get_stats() -> dict[str, Any]:
         routing = {str(r["bucket"]): int(r["cnt"]) for r in plan_res.mappings().all()}
 
     def safe_round(v: Any) -> Any:
+        # PostgreSQL percentile values may be Decimal rather than JSON-native floats.
         if v is None:
             return None
         return round(float(v), 1)

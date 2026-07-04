@@ -1,3 +1,4 @@
+"""Build a baseline execution plan from tenant policy and prompt length."""
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
@@ -5,6 +6,8 @@ from app.core.settings import PolicyConfig, TenantPolicy
 
 @dataclass(frozen = True)
 class ExecutionPlan : 
+    """Policy values carried through scheduling and generation."""
+
     tier : str
     decoding_profile : str
     max_tokens : int
@@ -12,19 +15,19 @@ class ExecutionPlan :
     cache : dict[str,Any]
     plan_name : str
 
-
 @dataclass(frozen=True)
 class DecisionTrace : 
+    """Small audit record explaining the initial plan choice."""
+
     reasons : list[str]
     bucket : str
     tenant_id : str
     policy_version: str
 
-
 def _pick_length_bucket(policy:PolicyConfig, prompt_chars : int) -> str:
     buckets = policy.routing.get('length_buckets',{})
     ordered = ['short','medium','long']
-    ## let get a name(ordered) which is just greater than the prompt_char and for fallback we return 'long'
+    # A missing boundary is skipped so partial policies still fall back to long.
     for name in ordered :
         cfg = buckets.get(name)
         if not cfg:
@@ -34,12 +37,12 @@ def _pick_length_bucket(policy:PolicyConfig, prompt_chars : int) -> str:
             return name
     return 'long'
 
-
 def build_plan(*,policy: PolicyConfig, tenant_id : str, prompt_chars : int, override_temperature:float|None, override_max_tokens: int|None)-> tuple[ExecutionPlan, DecisionTrace]:
-    ## becuase user can request for explicit temperature and max_token that means they can be overriden by defualt which we are getting from yaml
+    """Resolve tenant defaults and request overrides into an execution plan."""
+
     tenant : TenantPolicy = policy.tenants.get(tenant_id, policy.tenants['default'])
     bucket = _pick_length_bucket(policy, prompt_chars)
-    plan_cfg = policy.plans.get(bucket) or policy.plans.get('short') ## defualt set ot short
+    plan_cfg = policy.plans.get(bucket) or policy.plans.get('short')
     if not plan_cfg :
         plan_cfg = {"tier":"standard", "decoding_profile":"standard","max_tokens":256,"temperature":0.7}
 
@@ -63,5 +66,5 @@ def build_plan(*,policy: PolicyConfig, tenant_id : str, prompt_chars : int, over
         tenant_id=tenant_id,
         policy_version=policy.policy_version,
     )
-
+    # The cost router and admission controller may refine this baseline later.
     return plan, trace

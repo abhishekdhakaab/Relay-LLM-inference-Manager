@@ -1,3 +1,4 @@
+# Benchmark policy: the default tenant rejects over-budget work, while premium degrades it.
 policy_version: "bench-2"
 
 tenants:
@@ -39,6 +40,7 @@ tenants:
       p99_ms: 20000
       error_rate_max_pct: 1.0
 
+# Length plans establish a baseline before complexity routing refines the request.
 routing:
   length_buckets:
     short:  { max_chars: 800 }
@@ -62,6 +64,7 @@ plans:
     max_tokens: 1024
     temperature: 0.7
 
+# Admission estimates queue delay from measured short/long generation times.
 scheduler:
   short_max_prompt_chars: 1200
   workers: 8
@@ -79,7 +82,7 @@ scheduler:
       enabled: true
       retry_after_seconds: 2
 
-# ── Feature 1: Multi-Signal Cost Router ─────────────────────────────────────
+# Complexity routing
 cost_router:
   classifier_weights:
     structural: 0.35
@@ -117,7 +120,7 @@ cost_router:
       - "As an AI"
     escalation_cost_multiplier: 1.5
 
-# ── Feature 2: Circuit Breaker ───────────────────────────────────────────────
+# Backend protection
 circuit_breaker:
   failure_threshold: 5
   success_threshold: 2

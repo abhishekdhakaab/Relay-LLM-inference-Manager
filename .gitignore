@@ -1,22 +1,46 @@
+# Local configuration and credentials
 .env
+.env.*
+!.env.example
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
 .venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.egg-info/
 dist/
 build/
-# CI-generated ephemeral eval files — regenerated every run
+
+# Generated evaluation and benchmark reports
 eval/baseline.json
 eval/candidate.json
-# Keep benchmark results (eval/benchmark_*.json are committed)
+eval/benchmark_*.json
+eval/full_benchmark*.json
+eval/scheduler_stress.json
+relay/eval/*.json
+
+# Local tools and operating-system files
 .DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# Private / generated docs
+# Private/generated notes and agent configuration
 .claude/
+CLAUDE.md
+claude.md
+AGENTS.md
+.cursorrules
+*PROMPT*.md
 *.docx
-CLAUDE_CODE_PROMPT.md
-NEW_updates.md
-UPDATED_FEATURE.md
 
-# Relay runtime
+# Relay runtime files
 /tmp/relay_*.log
+*.log

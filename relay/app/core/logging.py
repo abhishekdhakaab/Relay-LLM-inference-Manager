@@ -1,3 +1,5 @@
+"""Structured JSON logging configuration."""
+
 from __future__ import annotations
 
 import logging
@@ -8,6 +10,7 @@ import structlog
 
 
 def configure_logging(level: str = "info") -> None:
+    """Configure stdlib logging and structlog with the same level."""
     logging.basicConfig(
         format="%(message)s",
         stream=sys.stdout,
@@ -30,4 +33,5 @@ def configure_logging(level: str = "info") -> None:
 
 
 def get_logger(**kwargs: Any) -> structlog.BoundLogger:
+    """Return a logger bound to stable component context."""
     return structlog.get_logger().bind(**kwargs)

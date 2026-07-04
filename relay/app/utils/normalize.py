@@ -1,3 +1,5 @@
+"""Canonicalize chat messages before exact-cache hashing."""
+
 from __future__ import annotations
 
 import hashlib
@@ -8,12 +10,14 @@ from app.models.openai_chat import ChatMessage
 
 @dataclass(frozen=True)
 class NormalizedRequest:
+    """Trimmed messages and their deterministic cache identity."""
+
     messages: tuple[ChatMessage, ...]
     canonical_text: str
     request_hash: str
 
-
 def normalize_messages(messages: list[ChatMessage]) -> NormalizedRequest:
+    """Trim messages and hash their role-prefixed canonical text."""
     parts: list[str] = []
     canon_msgs: list[ChatMessage] = []
 

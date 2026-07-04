@@ -60,7 +60,7 @@ scheduler:
       enabled: true
       retry_after_seconds: 2
 
-# ── Feature 1: Multi-Signal Cost Router ─────────────────────────────────────
+# Complexity routing
 cost_router:
   classifier_weights:
     structural: 0.35
@@ -98,7 +98,7 @@ cost_router:
       - "As an AI"
     escalation_cost_multiplier: 1.5
 
-# ── Feature 2: Circuit Breaker ───────────────────────────────────────────────
+# Backend protection
 circuit_breaker:
   failure_threshold: 5
   success_threshold: 2

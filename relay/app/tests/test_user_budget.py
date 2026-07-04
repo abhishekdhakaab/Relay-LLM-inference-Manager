@@ -1,5 +1,5 @@
 """
-Tests for Feature 2 — per-user Redis token budget.
+Tests for the per-user Redis token budget.
 Redis is mocked; no running Redis required.
 """
 from __future__ import annotations

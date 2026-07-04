@@ -1,3 +1,5 @@
+"""Score prompt complexity from structural, semantic, and intent signals."""
+
 from __future__ import annotations
 
 import re
@@ -7,9 +9,10 @@ from typing import Any
 
 from sqlalchemy import text as sa_text
 
-
 @dataclass
 class CapabilityVector:
+    """Classifier output consumed by the cost router."""
+
     complexity_score: float          # 0.0 – 1.0 composite
     structural_score: float          # sub-score: pure text structure signals
     semantic_score: float            # sub-score: prototype cosine similarity
@@ -23,9 +26,7 @@ class CapabilityVector:
     classifier_latency_ms: float     # wall-clock scoring time, logged to trace
 
 
-# ── Structural signals (zero-latency, pure string analysis) ──────────────────
-
-# Pre-compiled patterns — compile once at module load, never per request.
+# These patterns stay module-scoped because classification runs on every cache miss.
 _CONNECTORS = re.compile(
     r'\b(and|also|additionally|furthermore)\b',
     re.IGNORECASE,
@@ -54,51 +55,41 @@ _ENUMERATION = re.compile(
 
 
 def compute_structural_score(prompt: str) -> float:
-    """
-    Pure string analysis — no I/O, no ML.  Returns a score in [0, 1].
-    Scoring table from spec §1.3.
-    """
+    """Return a bounded complexity score using only prompt text."""
     score = 0.0
 
-    # Length signals
+    # Length contributes in two steps so very long prompts receive both weights.
     n = len(prompt)
     if n > 800:
         score += 0.15
     if n > 2000:
         score += 0.10  # additive on top of the >800 bucket
 
-    # Multi-part connectors — each connector contributes 0.10, cap at 0.30
+    # Repeated connectors matter, but the cap prevents this signal from dominating.
     connector_count = len(_CONNECTORS.findall(prompt))
     score += min(connector_count * 0.10, 0.30)
 
-    # Temporal reasoning
     if _TEMPORAL.search(prompt):
         score += 0.15
 
-    # Negation depth — 0.08 per word, cap at 0.20
     negation_count = len(_NEGATION.findall(prompt))
     score += min(negation_count * 0.08, 0.20)
 
-    # Conditional logic
     if _CONDITIONAL.search(prompt):
         score += 0.15
 
-    # Specific numeric constraints
     if _CONSTRAINTS.search(prompt):
         score += 0.10
 
-    # Explicit enumeration request
     if _ENUMERATION.search(prompt):
         score += 0.10
 
-    # Design / deep-explain pattern: inherently complex tasks
+    # Design questions need a larger model even when the prompt itself is short.
     if _DESIGN_MARKERS.search(prompt):
         score += 0.35
 
     return min(score, 1.0)
 
-
-# ── Tool / RAG requirement flags (pure string analysis) ──────────────────────
 
 _COMPUTATION_KEYWORDS = re.compile(
     r'(calculate|compute|how many|total|sum of|average of|rate of)',
@@ -114,7 +105,7 @@ _CODE_KEYWORDS = re.compile(
     r')',
     re.IGNORECASE,
 )
-# e.g. "Python implementation", "JavaScript function", "Go code"
+# Catch language-specific requests that do not use an explicit "write code" verb.
 _LANG_CODE = re.compile(
     r'\b(python|javascript|typescript|go|rust|java|c\+\+|c#|ruby|swift|kotlin'
     r'|scala|haskell|erlang|elixir|bash|shell|sql|r\b|matlab)\s+'
@@ -139,8 +130,7 @@ _MULTI_QUESTION_MARKERS = re.compile(
     re.IGNORECASE,
 )
 
-# Design / deep-explain markers — inherently complex regardless of prompt length.
-# Matched prompts receive a +0.35 structural bonus to push into the complex tier.
+# These markers deliberately carry enough weight to push design work upward.
 _DESIGN_MARKERS = re.compile(
     r'(\bdesign\s+(a|an|the|your|our)\b'
     r'|\barchitect\b'
@@ -159,12 +149,8 @@ _DESIGN_MARKERS = re.compile(
     re.IGNORECASE,
 )
 
-
 def compute_tool_flags(prompt: str) -> dict[str, bool]:
-    """
-    Detect boolean capability flags from prompt text.
-    Returns keys matching the CapabilityVector boolean fields.
-    """
+    """Detect independent capabilities that can force a tier upgrade."""
     needs_computation = bool(
         _COMPUTATION_KEYWORDS.search(prompt)
         or _COMPUTATION_SYMBOLS.search(prompt)
@@ -200,21 +186,11 @@ def compute_tool_flags(prompt: str) -> dict[str, bool]:
     }
 
 
-# ── Semantic prototype similarity ─────────────────────────────────────────────
-
 def _vec_literal(vec: list[float]) -> str:
     return "[" + ",".join(f"{x:.6f}" for x in vec) + "]"
 
-
-async def compute_semantic_score(
-    prompt_embedding: list[float],
-    db_session: Any,
-) -> tuple[float, float, str]:
-    """
-    Cosine similarity search against complexity_prototypes.
-    Returns (semantic_score, intent_base_weight, intent_type).
-    Falls back to (0.0, 0.25, "unknown") if table is empty or query fails.
-    """
+async def compute_semantic_score(prompt_embedding: list[float],db_session: Any,) -> tuple[float, float, str]:
+    """Find the closest intent prototype, with a conservative fallback."""
     q = sa_text(
         """
         SELECT
@@ -242,33 +218,16 @@ async def compute_semantic_score(
     return similarity, base_weight, intent_type
 
 
-# ── Composite classifier entry point ─────────────────────────────────────────
-
-async def classify(
-    prompt: str,
-    embedding: list[float],
-    db_session: Any,
-    w_structural: float = 0.35,
-    w_semantic: float = 0.40,
-    w_intent: float = 0.25,
-) -> CapabilityVector:
-    """
-    Full classification pipeline.  All three sub-scores run; tool flags run
-    in parallel with structural scoring (both are CPU-only, no await needed).
-    DB is touched exactly once for the prototype similarity query.
-    """
+async def classify(prompt: str,embedding: list[float],db_session: Any,w_structural: float = 0.35,w_semantic: float = 0.40,w_intent: float = 0.25,) -> CapabilityVector:
+    """Combine text heuristics and the nearest semantic prototype."""
     t_start = time.perf_counter()
 
-    # Structural + flags are pure CPU — run them together before the DB await
+    # Finish the CPU-only signals before yielding to the database query.
     structural_score = compute_structural_score(prompt)
     flags = compute_tool_flags(prompt)
 
-    # Fast-path: very short prompts are always simple.
-    # canonical_text is "role:content" so add 5 chars for "user:" prefix.
-    # Shortest medium prompt in the eval set has canonical len=59; all simple
-    # prompts that need fixing have canonical len≤55.  Threshold=57 is safe.
-    # All tool-flag overrides are forced to False so short prompts stay simple
-    # even when surface keywords like "how many" look like computation.
+    # The 57-character cutoff comes from the evaluation boundary (55 simple,
+    # 59 medium). It also suppresses noisy keyword flags on tiny questions.
     if len(prompt.strip()) <= 57 and not flags["needs_code"]:
         latency_ms = (time.perf_counter() - t_start) * 1000
         return CapabilityVector(
@@ -285,17 +244,12 @@ async def classify(
             classifier_latency_ms=latency_ms,
         )
 
-    # Single DB round-trip for prototype similarity
+    # One nearest-neighbor query supplies both semantic and intent signals.
     semantic_score, intent_weight, intent_type = await compute_semantic_score(
         embedding, db_session
     )
 
-    complexity_score = min(
-        w_structural * structural_score
-        + w_semantic * semantic_score
-        + w_intent * intent_weight,
-        1.0,
-    )
+    complexity_score = min(w_structural * structural_score+ w_semantic * semantic_score+ w_intent * intent_weight,1.0,)
 
     latency_ms = (time.perf_counter() - t_start) * 1000
 

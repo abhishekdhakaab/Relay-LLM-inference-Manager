@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS api_keys (
 CREATE INDEX IF NOT EXISTS idx_api_keys_hash     ON api_keys (key_hash);
 CREATE INDEX IF NOT EXISTS idx_api_keys_tenant   ON api_keys (tenant_id);
 
--- Seed two development keys so the system works immediately after migration.
--- Raw keys (put these in your .env or pass as headers during testing):
+-- These public fixtures are for local development only. Replace them before
+-- exposing the relay to any network you do not control.
 --   default tenant:  relay-dev-default-key-1234
 --   premium tenant:  relay-dev-premium-key-5678
 --   admin access:    relay-dev-admin-key-9999

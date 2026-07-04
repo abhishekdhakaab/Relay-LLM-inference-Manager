@@ -1,3 +1,5 @@
+"""Compute rolling latency and error-rate SLO gauges from request traces."""
+
 from __future__ import annotations
 
 import time
@@ -11,9 +13,7 @@ from app.core.settings import PolicyConfig
 
 log = get_logger(component="slo_checker")
 
-# In-memory store for Prometheus-compatible SLO gauges.
-# Keyed by (tenant_id, metric_name) → (value, labels_dict).
-# admin_routes.py reads this dict when serving /admin/metrics.
+# Gauges are process-local because the metrics endpoint scrapes this worker directly.
 _slo_gauges: dict[str, float] = {}
 _slo_last_checked: float = 0.0
 
@@ -28,13 +28,7 @@ def get_last_checked_ts() -> float:
 
 
 async def run_slo_check(db_session: Any, policy: PolicyConfig) -> None:
-    """
-    Query the last 5 minutes of traces per tenant, compute p50/p95/p99 and
-    error rate, compare against configured SLO thresholds, and update
-    Prometheus-style in-memory gauges.
-
-    Called by the background loop in main.py every 60 seconds.
-    """
+    """Refresh each tenant's five-minute latency and error-rate gauges."""
     global _slo_last_checked
     _slo_last_checked = time.time()
 
@@ -48,7 +42,7 @@ async def run_slo_check(db_session: Any, policy: PolicyConfig) -> None:
             continue
 
         if not rows:
-            # No traffic in last 5 minutes — health is "OK" (no breach evidence)
+            # No samples means no evidence of a breach, rather than an unknown alert.
             _write_gauge(tenant_id, "slo_health", 1.0)
             continue
 
@@ -66,7 +60,7 @@ async def run_slo_check(db_session: Any, policy: PolicyConfig) -> None:
         else:
             p50 = p95 = p99 = 0.0
 
-        # Write per-dimension gauges and check breaches
+        # Status stays in the label so dashboards can filter active breaches.
         for metric, actual, threshold in [
             ("slo_latency_p50_ms", p50, slo.p50_ms),
             ("slo_latency_p95_ms", p95, slo.p95_ms),

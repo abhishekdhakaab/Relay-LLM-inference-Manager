@@ -30,13 +30,13 @@ loadtest:
 	poetry -C relay run locust -f ../scripts/locustfile.py --host http://localhost:8000
 
 eval_baseline:
-	poetry -C relay run python ../scripts/eval_replay.py --host http://localhost:8000 --gold ../eval/gold.jsonl --out eval/baseline.json --policy-label baseline
+	poetry -C relay run python ../scripts/eval_replay.py --host http://localhost:8000 --gold ../eval/gold.jsonl --out ../eval/baseline.json --policy-label baseline
 
 eval_candidate:
-	poetry -C relay run python ../scripts/eval_replay.py --host http://localhost:8000 --gold ../eval/gold.jsonl --out eval/candidate.json --policy-label candidate --baseline-out eval/baseline.json
+	poetry -C relay run python ../scripts/eval_replay.py --host http://localhost:8000 --gold ../eval/gold.jsonl --out ../eval/candidate.json --policy-label candidate --baseline-out ../eval/baseline.json
 
 eval_gate:
-	poetry -C relay run python scripts/eval_gate.py --baseline eval/baseline.json --candidate eval/candidate.json
+	poetry -C relay run python ../scripts/eval_gate.py --baseline ../eval/baseline.json --candidate ../eval/candidate.json
 
 benchmark:
-	poetry -C relay run python scripts/benchmark.py --host http://localhost:8000 --gold eval/gold_100.jsonl --out eval/benchmark_report.json
+	poetry -C relay run python ../scripts/benchmark_v3.py --host http://localhost:8000 --gold ../eval/gold_150.jsonl --cost-gold ../eval/cost_router_gold.jsonl --out ../eval/benchmark_report.json
